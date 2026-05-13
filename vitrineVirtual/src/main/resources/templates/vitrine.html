@@ -1,10 +1,27 @@
-'<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Vitrine ANELIE - Esqueleto</title>
+    <title>Vitrine ANELIE</title>
+    <h1>Tela de test</h1>
 </head>
 <body>
-<h1>Página em Construção</h1>
+<h1>Catálogo de Produtos</h1>
+
+<a href="/admin/cadastro">Ir para Cadastro de Produtos</a>
+<hr>
+
+<div th:each="prod : ${produtos}" style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+    <h3 th:text="${prod.nome}">Nome do Produto</h3>
+    <p><strong>Categoria:</strong> <span th:text="${prod.categoria}"></span></p>
+    <p><strong>Valor: R$ </strong> <span th:text="${prod.valor}"></span></p>
+
+    <hr>
+    <a th:href="@{/admin/editar/{id}(id=${prod.id})}" style="color: blue; margin-right: 15px;">Editar</a>
+
+    <a th:href="@{/admin/excluir/{id}(id=${prod.id})}" style="color: red;"
+       onclick="return confirm('Tem certeza que deseja excluir esta joia do catálogo?');">Excluir</a>
+</div>
+
 </body>
 </html>
