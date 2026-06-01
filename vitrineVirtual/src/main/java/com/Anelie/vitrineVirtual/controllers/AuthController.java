@@ -21,18 +21,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
     // Constante Global
-
     public static final String COOKIE_NAME = "jwt_token";
 
-    // 2. Variáveis imutáveis (final)
+    // Variáveis imutáveis (final)
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 3. Injeção de Dependência via Construtor (Padrão Ouro do Spring)
+    // Injeção de Dependência via Construtor
     public AuthController(AuthenticationManager authenticationManager,
                           JwtService jwtService,
                           UsuarioRepository usuarioRepository,

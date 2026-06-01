@@ -1,5 +1,6 @@
 package com.Anelie.vitrineVirtual.controllers;
 
+import com.Anelie.vitrineVirtual.repositories.ProdutoRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
@@ -11,10 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin") //para tudo que se tratar do Lojista vamos usar a rota admin
 public class AdminController {
 
+    private final ProdutoRepository produtoRepository;
+    public AdminController(ProdutoRepository produtoRepository) {
+        this.produtoRepository = produtoRepository;
+    }
+
     @GetMapping("/inicio")
     public String dashboardAdmin(Model model) {
-        // model.addAttribute("produtos", produtoRepository.findAll());
-
+        //busca todos os produtos
+        model.addAttribute("produtos", produtoRepository.findAll());
         return "admin/inicio_admin";
     }
     @GetMapping("/logout")
