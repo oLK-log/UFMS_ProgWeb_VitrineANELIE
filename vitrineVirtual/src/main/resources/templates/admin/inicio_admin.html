@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Lojista - Vitrine ANELIE</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        .dashboard-container { max-width: 1000px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-admin { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 2px solid #f4f4f4; padding-bottom: 1rem; }
+        .btn-primary { background-color: #28a745; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
+        .btn-danger { background-color: #dc3545; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <header class="header-admin">
+        <h2>Painel do Lojista</h2>
+        <div>
+            <a th:href="@{/admin/produtos/novo}" class="btn-primary">Novo Produto</a>
+            <button id="btnSair" class="btn-danger">Sair</button>
+        </div>
+    </header>
+
+    <h3>Meus Produtos Cadastrados</h3>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome da Joia</th>
+            <th>Preço</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="4" style="text-align: center; color: #777; padding: 2rem;">
+                Nenhum produto cadastrado. Clique em "Novo Produto" para começar a sua vitrine.
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<a th:href="@{/admin/logout}" class="btn-danger">Sair</a>
+
+</body>
+</html>

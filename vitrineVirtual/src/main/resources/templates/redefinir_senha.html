@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha - Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Criar Nova Senha</h2>
+
+    <div id="mensagem-erro" class="error-message">As senhas não coincidem ou o link expirou.</div>
+
+    <form id="formRedefinir">
+        <input type="hidden" id="token" th:value="${token}">
+
+        <div class="form-group">
+            <label for="novaSenha">Nova Senha</label>
+            <input type="password" id="novaSenha" required placeholder="Digite a nova senha">
+        </div>
+
+        <div class="form-group">
+            <label for="confirmarSenha">Confirmar Nova Senha</label>
+            <input type="password" id="confirmarSenha" required placeholder="Repita a nova senha">
+        </div>
+
+        <button type="submit">Salvar Nova Senha</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('formRedefinir').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const novaSenha = document.getElementById('novaSenha').value;
+        const confirmarSenha = document.getElementById('confirmarSenha').value;
+        const token = document.getElementById('token').value;
+        const msgErro = document.getElementById('mensagem-erro');
+
+        if (novaSenha !== confirmarSenha) {
+            msgErro.textContent = "As senhas não coincidem!";
+            msgErro.style.display = 'block';
+            return;
+        }
+
+        try {
+            // rota back
+            const response = await fetch('/auth/salvar-nova-senha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token, novaSenha: novaSenha })
+            });
+
+            if (response.ok) {
+                alert("Senha alterada com sucesso! Faça login para continuar.");
+                window.location.href = '/login';
+            } else {
+                msgErro.textContent = "Erro: Link inválido ou expirado.";
+                msgErro.style.display = 'block';
+            }
+        } catch (error) {
+            msgErro.textContent = "Erro na comunicação com o servidor.";
+            msgErro.style.display = 'block';
+        }
+    });
+</script>
+
+</body>
+</html>

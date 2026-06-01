@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha - Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .success-message { color: #28a745; margin-bottom: 1rem; display: none; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Recuperar Senha</h2>
+    <p style="font-size: 0.9em; color: #666; margin-bottom: 1.5rem;">
+        Digite o e-mail cadastrado. Enviaremos um link seguro para você criar uma nova senha.
+    </p>
+
+    <div id="mensagem-sucesso" class="success-message">
+        Se o e-mail existir em nossa base, um link de recuperação foi enviado!
+    </div>
+
+    <div id="mensagem-erro" class="error-message">Erro ao processar o pedido. Tente novamente.</div>
+
+    <form id="formRecuperar">
+        <div class="form-group">
+            <label for="email">E-mail Cadastrado</label>
+            <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+        </div>
+        <button type="submit" id="btnEnviar">Enviar Link de Recuperação</button>
+    </form>
+
+    <div style="margin-top: 1rem; text-align: center; font-size: 0.9em;">
+        <a th:href="@{/login}">Voltar para o Login</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formRecuperar').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const btn = document.getElementById('btnEnviar');
+
+        btn.disabled = true;
+        btn.textContent = "Enviando...";
+
+        try {
+            // rota back
+            const response = await fetch('/auth/solicitar-recuperacao', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            // evita ataques de enumercao
+            document.getElementById('formRecuperar').style.display = 'none';
+            document.getElementById('mensagem-sucesso').style.display = 'block';
+        } catch (error) {
+            document.getElementById('mensagem-erro').style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = "Enviar Link de Recuperação";
+        }
+    });
+</script>
+
+</body>
+</html>

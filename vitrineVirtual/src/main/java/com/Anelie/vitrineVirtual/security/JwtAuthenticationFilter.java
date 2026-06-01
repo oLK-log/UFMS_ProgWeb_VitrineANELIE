@@ -1,7 +1,9 @@
 package com.Anelie.vitrineVirtual.security;
 
+import com.Anelie.vitrineVirtual.controllers.AuthController;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,38 +27,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // autorizacao da requisicao
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
-        //verifica se cabecalho ou beer
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        String jwt = null;
+        String userEmail = null;
 
-        // pega somente token
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extrairUsername(jwt);
-        // Se tiver um e-mail no token e o usuário n está autenticado no contexto do Spring
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Vai no banco de dados buscar o Lojista
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            // se valido e n expirado
-            if (jwtService.isTokenValido(jwt, userDetails)) {
-                // cria credencia spring security
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // login propriamente dito
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+        // pega um cookie especifico na requisicao
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (AuthController.COOKIE_NAME.equals(cookie.getName())) {
+                    jwt = cookie.getValue();
+                    break;
+                }
             }
         }
+
+        // se existir token valido, validação padrão
+        if (jwt != null) {
+            userEmail = jwtService.extrairUsername(jwt);
+
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+                if (jwtService.isTokenValido(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+        }
+
         filterChain.doFilter(request, response);
     }
 }
+// Dica: Você pode ir no seu JwtAuthenticationFilter e trocar a string "jwt_token" por AuthController.COOKIE_NAME

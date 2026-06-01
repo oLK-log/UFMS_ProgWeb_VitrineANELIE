@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Vitrine ANELIE - Esqueleto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Lojista - Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/styles/login.css}" >
 </head>
 <body>
-<h1>Página em Construção</h1>
+
+<div class="login-container">
+    <h2>Acesso Restrito</h2>
+    <p>Área exclusiva para o Lojista.</p>
+
+    <div id="mensagem-erro" class="error-message">Credenciais inválidas. Tente novamente.</div>
+
+    <form id="formLogin">
+        <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+        </div>
+        <div class="form-group">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" required placeholder="Sua senha de acesso">
+        </div>
+        <button type="submit">Entrar no Painel</button>
+    </form>
+
+    <!-- esqueci senha - Link para a próxima tela  -->
+    <div style="margin-top: 1rem; text-align: center; font-size: 0.9em;">
+        <a th:href="@{/recuperar-senha}">Esqueci minha senha</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formLogin').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Impede a página de recarregar
+
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const msgErro = document.getElementById('mensagem-erro');
+
+        try {
+            // Chama a  rota criada no AuthController
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login: email, senha: senha })
+            });
+
+            if (response.ok) {
+                //se guardou o cookie ok
+                window.location.href = '/admin/inicio';
+            } else {
+                // Se a senha estiver errada, exibe a mensagem
+                msgErro.style.display = 'block';
+            }
+        } catch (error) {
+            console.error("Erro na comunicação com a API:", error);
+            msgErro.textContent = "Erro no servidor. Tente mais tarde.";
+            msgErro.style.display = 'block';
+        }
+    });
+</script>
+
 </body>
 </html>

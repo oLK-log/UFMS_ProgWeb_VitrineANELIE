@@ -22,14 +22,16 @@ public class SecurityConfig {
 
                 // Aqui definimos quem entra onde
                 .authorizeHttpRequests(auth -> auth
-                        // Rota Públicas(O Cliente acessando o catálogo e a tela de login)
-                        .requestMatchers("/", "/produtos/**", "/auth/**", "/css/**", "/js/**").permitAll()
+                        // Rota Públicas(O Cliente acessando o catálogo)
+                        // aqui eh o que vamos permitir um user comum acessar
+                        .requestMatchers("/", "/produtos/**", "/auth/**", "/login", "/recuperar-senha", "/redefinir-senha", "/css/**", "/js/**", "/img/**").permitAll()
 
                         // Rotas Privadas, tipo Lojista fazendo o CRUD)
                         .requestMatchers("/admin/**").authenticated()
 
                         // Qualquer outra rota que não mapeamos, bloqueia por segurança
                         .anyRequest().authenticated()
+
                 ).addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
