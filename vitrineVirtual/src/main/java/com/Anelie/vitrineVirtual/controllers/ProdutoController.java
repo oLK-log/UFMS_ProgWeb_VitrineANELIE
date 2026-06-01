@@ -28,7 +28,7 @@ public class ProdutoController {
     }
 
     //
-    //Exibir tela de formulario de cadsatro
+    //P Exibir tela de formulario de cadsatro
     @GetMapping("/admin/cadastro")
     public String exibirCadastro(Model model){
         //aqui estamos enviando um objeto vazio para o HTML
