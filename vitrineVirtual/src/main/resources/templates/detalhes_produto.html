@@ -1,10 +1,117 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Vitrine ANELIE - Esqueleto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${produto.nome} + ' — ANELIE'">Produto — ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<h1>Página em Construção</h1>
+
+<div th:replace="~{fragments/navbar_footer_cliente :: navbar-cliente}"></div>
+
+<div class="detail-grid">
+
+    <div class="detail-img">
+        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
+             th:src="${produto.imagem}" th:alt="${produto.nome}">
+        <div class="detail-img-placeholder"
+             th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
+    </div>
+
+    <div class="detail-info">
+        <p class="detail-category" th:text="${produto.categoria}">Categoria</p>
+        <h1 class="detail-name" th:text="${produto.nome}">Nome da Joia</h1>
+
+        <p style="font-size:14px; color:var(--text-muted);"
+           th:if="${produto.material != null}"
+           th:text="'Material: ' + ${produto.material}"></p>
+
+        <p class="detail-price"
+           th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">
+            R$ 0,00
+        </p>
+
+        <div class="detail-divider"></div>
+
+        <p class="detail-desc"
+           th:text="${produto.descricao != null and !produto.descricao.isEmpty()}
+                     ? ${produto.descricao} : 'Sem descrição disponível.'">
+        </p>
+
+        <div class="detail-divider"></div>
+
+        <div style="display:flex; align-items:center; gap:16px;">
+            <div class="qty-control">
+                <button type="button" onclick="alterarQtd(-1)">−</button>
+                <span id="qtd">1</span>
+                <button type="button" onclick="alterarQtd(1)">+</button>
+            </div>
+            <span style="font-size:13px; color:var(--text-muted);">unidade(s)</span>
+        </div>
+
+        <button class="btn btn-primary"
+                style="margin-top:8px; padding:14px 28px; font-size:16px;"
+                onclick="adicionarAoCarrinho()">
+            🛒 Adicionar ao carrinho
+        </button>
+
+        <a th:href="@{/}" style="font-size:14px; color:var(--text-muted);">← Voltar à vitrine</a>
+    </div>
+</div>
+
+<div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
+
+<script th:inline="javascript">
+const produto = {
+    id:       /*[[${produto.id}]]*/ 0,
+    nome:     /*[[${produto.nome}]]*/ '',
+    valor:    /*[[${produto.valor}]]*/ 0,
+    imagem:   /*[[${produto.imagem}]]*/ '',
+    categoria:/*[[${produto.categoria}]]*/ '',
+    material: /*[[${produto.material}]]*/ ''
+};
+
+function alterarQtd(delta) {
+    const el = document.getElementById('qtd');
+    let val = parseInt(el.textContent) + delta;
+    if (val < 1) val = 1;
+    el.textContent = val;
+}
+
+function adicionarAoCarrinho() {
+    const qtd = parseInt(document.getElementById('qtd').textContent);
+    let carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    const idx = carrinho.findIndex(i => i.id === produto.id);
+    if (idx >= 0) {
+        carrinho[idx].quantidade += qtd;
+    } else {
+        carrinho.push({ ...produto, quantidade: qtd });
+    }
+    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+
+    const btn = event.target;
+    btn.textContent = '✓ Adicionado!';
+    btn.style.background = 'var(--success)';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+        btn.textContent = '🛒 Adicionar ao carrinho';
+        btn.style.background = '';
+        btn.style.color = '';
+    }, 1800);
+
+    const total = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
+    const el = document.getElementById('cart-count');
+    if (el) el.textContent = total;
+}
+
+(function() {
+    const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    const total = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
+    const el = document.getElementById('cart-count');
+    if (el) el.textContent = total;
+})();
+</script>
+
 </body>
 </html>
