@@ -3,65 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Lojista - Vitrine ANELIE</title>
-    <link rel="stylesheet" th:href="@{/styles/login.css}" >
+    <title>Login — Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-<div class="login-container">
-    <h2>Acesso Restrito</h2>
-    <p>Área exclusiva para o Lojista.</p>
+<div class="auth-page">
+    <div class="auth-card">
 
-    <div id="mensagem-erro" class="error-message">Credenciais inválidas. Tente novamente.</div>
-
-    <form id="formLogin">
-        <div class="form-group">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+        <div style="text-align:center; margin-bottom:24px;">
+            <img th:src="@{/logo2.png}" alt="ANELIE"
+                 style="height:100px; width:auto; object-fit:contain; margin: 0 auto;">
         </div>
-        <div class="form-group">
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" required placeholder="Sua senha de acesso">
-        </div>
-        <button type="submit">Entrar no Painel</button>
-    </form>
+        <p class="auth-subtitle">Área restrita ao lojista</p>
 
-    <!-- esqueci senha - Link para a próxima tela  -->
-    <div style="margin-top: 1rem; text-align: center; font-size: 0.9em;">
-        <a th:href="@{/recuperar-senha}">Esqueci minha senha</a>
+        <!-- Mensagem de erro (enviada como parâmetro de redirect) -->
+        <div class="alert alert-danger" th:if="${param.erro}" style="margin-bottom: 18px;">
+            E-mail ou senha incorretos. Tente novamente.
+        </div>
+
+        <form class="auth-form" th:action="@{/auth/login}" method="post">
+
+            <div class="form-group">
+                <label for="login">E-mail</label>
+                <input type="email" id="login" name="login"
+                       placeholder="seu@email.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha"
+                       placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Entrar
+            </button>
+
+        </form>
+
+        <div class="auth-footer-link">
+            <a th:href="@{/recuperar-senha}">Esqueceu sua senha?</a>
+        </div>
+
     </div>
 </div>
-
-<script>
-    document.getElementById('formLogin').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Impede a página de recarregar
-
-        const email = document.getElementById('email').value;
-        const senha = document.getElementById('senha').value;
-        const msgErro = document.getElementById('mensagem-erro');
-
-        try {
-            // Chama a  rota criada no AuthController
-            const response = await fetch('/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ login: email, senha: senha })
-            });
-
-            if (response.ok) {
-                //se guardou o cookie ok
-                window.location.href = '/admin/inicio';
-            } else {
-                // Se a senha estiver errada, exibe a mensagem
-                msgErro.style.display = 'block';
-            }
-        } catch (error) {
-            console.error("Erro na comunicação com a API:", error);
-            msgErro.textContent = "Erro no servidor. Tente mais tarde.";
-            msgErro.style.display = 'block';
-        }
-    });
-</script>
 
 </body>
 </html>
