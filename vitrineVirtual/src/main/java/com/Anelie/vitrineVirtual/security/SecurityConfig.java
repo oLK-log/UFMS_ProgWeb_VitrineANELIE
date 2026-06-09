@@ -13,8 +13,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -25,14 +27,16 @@ public class SecurityConfig {
 
                 // Aqui definimos quem entra onde
                 .authorizeHttpRequests(auth -> auth
-                        // Rota Públicas(O Cliente acessando o catálogo)
-                        // aqui eh o que vamos permitir um user comum acessar
-                        .requestMatchers("/", "/produtos/**","/carrinho/**", "/auth/**", "/login", "/recuperar-senha", "/redefinir-senha", "/css/**", "/js/**", "/img/**").permitAll()
+                        // Rotas Públicas (O Cliente acessando o catálogo e o fluxo de compra)
+                        .requestMatchers("/", "/error","/produto/**","/produtos/**","/carrinho/**","/checkout",
+                                "/pedido-finalizado","/api/pedidos/**", "/auth/**","/login","/recuperar-senha",
+                                "/redefinir-senha","/css/**", "/js/**", "/img/**","/*.png","/*.jpg","/uploads/**"
+                        ).permitAll()
 
-                        // Rotas Privadas, tipo Lojista fazendo o CRUD)
+                        // Rotas Privadas, tipo Lojista fazendo o CRUD
                         .requestMatchers("/admin/**").authenticated()
 
-                        // Qualquer outra rota que não mapeamos, bloqueia por segurança
+                        // Qualquer outra rota n mapeada eh bloqueada
                         .anyRequest().authenticated()
 
                 ).addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
@@ -40,11 +44,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // usaando o BCrypt
+    // Usando o BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public org.springframework.security.authentication.AuthenticationManager authenticationManager(
             org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration configuration) throws Exception {
