@@ -5,63 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedido Finalizado — Vitrine ANELIE</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        .back-link {
-            position: absolute;
-            top: 24px;
-            left: 24px;
-            font-size: 14px;
-            color: var(--text-muted);
-            transition: var(--transition);
-        }
-        .back-link:hover {
-            color: var(--text);
-            text-decoration: underline;
-        }
-
-        .success-icon {
-            width: 64px; height: 64px;
-            background: #eafaf1; color: var(--success);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 32px; margin: 0 auto 20px auto;
-        }
-
-        /* Caixa do recibo estilo  */
-        .copy-box {
-            background: var(--white);
-            color: var(--text);
-            border: 1px solid var(--ice-blue-dark);
-            padding: 20px;
-            font-family: monospace, Courier, sans-serif;
-            font-size: 13px;
-            line-height: 1.6;
-            text-align: left;
-            margin: 24px 0;
-            white-space: pre-wrap;
-            word-break: break-word;
-            height: 300px;
-            overflow-y: auto; /* Adiciona scroll se o pedido tiver muitos itens */
-        }
-
-        .btn-copy {
-            width: 100%; padding: 12px;
-            background-color: var(--text); color: var(--white);
-            border: none; cursor: pointer;
-            font-family: var(--font-sans); font-size: 15px; font-weight: 500;
-            transition: 0.2s; margin-bottom: 12px;
-        }
-        .btn-copy:hover { opacity: 0.8; }
-
-        .btn-outline-custom {
-            width: 100%; padding: 12px;
-            background-color: transparent; color: var(--text);
-            border: 1px solid var(--text); cursor: pointer;
-            font-family: var(--font-sans); font-size: 15px; font-weight: 500;
-            transition: 0.2s; text-align: center; display: block;
-        }
-        .btn-outline-custom:hover { background-color: var(--text); color: var(--white); }
-    </style>
 </head>
 <body class="auth-page">
 

@@ -8,110 +8,102 @@
 </head>
 <body>
 
-<div th:replace="~{fragments/navbar_footer_cliente :: navbar-cliente}"></div>
+<a th:href="@{/}" class="back-link">← Voltar à vitrine</a>
 
-<div class="detail-grid">
-
-    <div class="detail-img">
-        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
-             th:src="${produto.imagem}" th:alt="${produto.nome}">
-        <div class="detail-img-placeholder"
-             th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
-    </div>
-
-    <div class="detail-info">
-        <p class="detail-category" th:text="${produto.categoria}">Categoria</p>
-        <h1 class="detail-name" th:text="${produto.nome}">Nome da Joia</h1>
-
-        <p style="font-size:14px; color:var(--text-muted);"
-           th:if="${produto.material != null}"
-           th:text="'Material: ' + ${produto.material}"></p>
-
-        <p class="detail-price"
-           th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">
-            R$ 0,00
-        </p>
-
-        <div class="detail-divider"></div>
-
-        <p class="detail-desc"
-           th:text="${produto.descricao != null and !produto.descricao.isEmpty()}
-                     ? ${produto.descricao} : 'Sem descrição disponível.'">
-        </p>
-
-        <div class="detail-divider"></div>
-
-        <div style="display:flex; align-items:center; gap:16px;">
-            <div class="qty-control">
-                <button type="button" onclick="alterarQtd(-1)">−</button>
-                <span id="qtd">1</span>
-                <button type="button" onclick="alterarQtd(1)">+</button>
-            </div>
-            <span style="font-size:13px; color:var(--text-muted);">unidade(s)</span>
-        </div>
-
-        <button class="btn btn-primary"
-                style="margin-top:8px; padding:14px 28px; font-size:16px;"
-                onclick="adicionarAoCarrinho()">
-            🛒 Adicionar ao carrinho
-        </button>
-
-        <a th:href="@{/}" style="font-size:14px; color:var(--text-muted);">← Voltar à vitrine</a>
-    </div>
+<div class="auth-header" style="margin-top: 40px;">
+    <img th:src="@{/logo3.png}" alt="ANELIE Logo" class="auth-logo">
 </div>
 
-<div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
+<main class="product-detail-page">
+    <div class="detail-grid">
+
+        <div class="detail-img-wrapper">
+            <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
+                 th:src="${produto.imagem}" th:alt="${produto.nome}">
+            <div class="detail-placeholder"
+                 th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
+        </div>
+
+        <div class="detail-info">
+            <p class="detail-category" th:text="${produto.categoria}">Categoria</p>
+            <h1 class="detail-name" th:text="${produto.nome}">Nome da Joia</h1>
+
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom: 12px;"
+               th:if="${produto.material != null and !produto.material.isEmpty()}"
+               th:text="'Material: ' + ${produto.material}"></p>
+
+            <p class="detail-price"
+               th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">
+                R$ 0,00
+            </p>
+
+            <div class="detail-divider"></div>
+
+            <p class="detail-desc"
+               th:text="${produto.descricao != null and !produto.descricao.isEmpty()}
+                             ? ${produto.descricao} : 'Sem descrição disponível no momento.'">
+            </p>
+
+            <div class="detail-divider"></div>
+
+            <div class="qty-wrapper">
+                <span style="font-size:14px; color:var(--text-muted);">Quantidade:</span>
+                <div class="qty-control">
+                    <button type="button" onclick="alterarQtd(-1)">−</button>
+                    <span id="qtd">1</span>
+                    <button type="button" onclick="alterarQtd(1)">+</button>
+                </div>
+            </div>
+
+            <button class="btn-add-cart" onclick="adicionarAoCarrinho(event)">
+                Adicionar ao carrinho
+            </button>
+        </div>
+
+    </div>
+</main>
 
 <script th:inline="javascript">
-const produto = {
-    id:       /*[[${produto.id}]]*/ 0,
-    nome:     /*[[${produto.nome}]]*/ '',
-    valor:    /*[[${produto.valor}]]*/ 0,
-    imagem:   /*[[${produto.imagem}]]*/ '',
-    categoria:/*[[${produto.categoria}]]*/ '',
-    material: /*[[${produto.material}]]*/ ''
-};
+    const produto = {
+        id:       /*[[${produto.id}]]*/ 0,
+        nome:     /*[[${produto.nome}]]*/ '',
+        valor:    /*[[${produto.valor}]]*/ 0,
+        imagem:   /*[[${produto.imagem}]]*/ '',
+        categoria:/*[[${produto.categoria}]]*/ '',
+        material: /*[[${produto.material}]]*/ ''
+    };
 
-function alterarQtd(delta) {
-    const el = document.getElementById('qtd');
-    let val = parseInt(el.textContent) + delta;
-    if (val < 1) val = 1;
-    el.textContent = val;
-}
-
-function adicionarAoCarrinho() {
-    const qtd = parseInt(document.getElementById('qtd').textContent);
-    let carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
-    const idx = carrinho.findIndex(i => i.id === produto.id);
-    if (idx >= 0) {
-        carrinho[idx].quantidade += qtd;
-    } else {
-        carrinho.push({ ...produto, quantidade: qtd });
+    function alterarQtd(delta) {
+        const el = document.getElementById('qtd');
+        let val = parseInt(el.textContent) + delta;
+        if (val < 1) val = 1;
+        el.textContent = val;
     }
-    localStorage.setItem('carrinho', JSON.stringify(carrinho));
 
-    const btn = event.target;
-    btn.textContent = '✓ Adicionado!';
-    btn.style.background = 'var(--success)';
-    btn.style.color = '#fff';
-    setTimeout(() => {
-        btn.textContent = '🛒 Adicionar ao carrinho';
-        btn.style.background = '';
-        btn.style.color = '';
-    }, 1800);
+    function adicionarAoCarrinho(event) {
+        const qtd = parseInt(document.getElementById('qtd').textContent);
+        let carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+        const idx = carrinho.findIndex(i => i.id === produto.id);
 
-    const total = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
-    const el = document.getElementById('cart-count');
-    if (el) el.textContent = total;
-}
+        if (idx >= 0) {
+            carrinho[idx].quantidade += qtd;
+        } else {
+            carrinho.push({ ...produto, quantidade: qtd });
+        }
 
-(function() {
-    const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
-    const total = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
-    const el = document.getElementById('cart-count');
-    if (el) el.textContent = total;
-})();
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+
+        const btn = event.target;
+        const textoOriginal = btn.textContent;
+
+        btn.textContent = '✓ Adicionado à sacola';
+        btn.style.background = 'var(--success)';
+
+        setTimeout(() => {
+            btn.textContent = textoOriginal;
+            btn.style.background = 'var(--text)';
+        }, 2000);
+    }
 </script>
-
 </body>
 </html>
