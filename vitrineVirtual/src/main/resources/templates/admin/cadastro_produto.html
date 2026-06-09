@@ -1,49 +1,69 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Produto - ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-<h2>Cadastrar Novo Produto - pag de teste</h2>
+<body class="admin-body">
 
-<form action="#" th:action="@{/admin/cadastro}" th:object="${produto}" method="post">
-    <input type="hidden" th:field="*{id}" />
+<div class="navbar-admin">
+    <div class="brand">ANELIE <span>Admin</span></div>
+    <nav>
+        <a th:href="@{/admin/inicio}">Painel</a>
+        <a th:href="@{/admin/logout}" class="logout">Sair</a>
+    </nav>
+</div>
 
-    <div>
-        <label>Nome do Produto:</label>
-        <input type="text" th:field="*{nome}" required />
-    </div>
+<div class="admin-form-container">
+    <h2 th:text="${produto.id == null ? 'Cadastrar Nova Joia' : 'Editar Joia'}">Cadastrar Produto</h2>
 
-    <div>
-        <label>Categoria:</label>
-        <input type="text" th:field="*{categoria}" required />
-    </div>
+    <form th:action="@{/admin/produtos/salvar}" th:object="${produto}" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px;">
 
-    <div>
-        <label>Material:</label>
-        <input type="text" th:field="*{material}" />
-    </div>
+        <input type="hidden" th:field="*{id}" />
 
-    <div>
-        <label>Caminho/URL da Imagem:</label>
-        <input type="text" th:field="*{imagem}" required />
-    </div>
+        <div class="form-group">
+            <label>Nome da Joia:</label>
+            <input type="text" th:field="*{nome}" placeholder="Ex: Colar Trevo" required />
+        </div>
 
-    <div>
-        <label>Descrição:</label>
-        <textarea th:field="*{descricao}"></textarea>
-    </div>
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+                <label>Categoria:</label>
+                <input type="text" th:field="*{categoria}" placeholder="Ex: Colar, Anel..." required />
+            </div>
+            <div>
+                <label>Material:</label>
+                <input type="text" th:field="*{material}" placeholder="Ex: Prata 925" />
+            </div>
+        </div>
 
-    <div>
-        <label>Valor (R$):</label>
-        <input type="number" step="0.01" th:field="*{valor}" required />
-    </div>
+        <div class="form-group">
+            <label>Valor (R$):</label>
+            <input type="number" step="0.01" th:field="*{valor}" placeholder="0,00" required />
+        </div>
 
-    <button type="submit">Salvar Produto</button>
-</form>
+        <div class="form-group">
+            <label>Imagem da Joia:</label>
+            <input type="file" id="file" name="file" accept="image/*" th:required="${produto.id == null}" style="padding: 8px;">
 
-<br>
-<a th:href="@{/admin/inicio}">Voltar para o Painel</a>
+            <small th:if="${produto.id != null}" style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+                Deixe em branco para manter a imagem atual.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label>Descrição:</label>
+            <textarea th:field="*{descricao}" placeholder="Conte os detalhes da joia..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button type="submit" class="btn btn-primary btn-full">Salvar Joia</button>
+            <a th:href="@{/admin/inicio}" class="btn btn-outline" style="text-align: center; width: 100%;">Cancelar</a>
+        </div>
+    </form>
+</div>
+
 </body>
 </html>
