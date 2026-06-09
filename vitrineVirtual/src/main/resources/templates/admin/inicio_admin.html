@@ -3,81 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Lojista - Vitrine ANELIE</title>
-
+    <title>Painel Admin — Vitrine ANELIE</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
-    <style>
-        .dashboard-container { max-width: 1000px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header-admin { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 2px solid #f4f4f4; padding-bottom: 1rem; }
-        .btn-primary { background-color: #28a745; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
-        .btn-danger { background-color: #dc3545; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; }
-    </style>
 </head>
 <body>
 
-<div class="dashboard-container">
-    <header class="header-admin">
-        <h2>Painel do Lojista</h2>
+<div th:replace="~{fragments/navbar_admin :: navbar-admin}" th:with="currentPage='inicio'"></div>
+
+<main class="admin-main">
+
+    <div class="page-header">
         <div>
-            <a th:href="@{/admin/cadastro}" class="btn-primary">Novo Produto</a>
-            <button id="btnSair" class="btn-danger">Sair</button>
+            <h1>Produtos cadastrados</h1>
+            <p th:text="${produtos.size()} + ' joias no catálogo'">0 joias no catálogo</p>
         </div>
-    </header>
-    <div th:if="${mensagemSucesso}"
-         style="background-color: #d4edda; color: #155724; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; border: 1px solid #c3e6cb; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        <span th:text="${mensagemSucesso}">Mensagem de sucesso</span>
+        <a th:href="@{/admin/cadastro}" class="btn btn-primary">+ Novo produto</a>
     </div>
-    <h3>Meus Produtos Cadastrados</h3>
 
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome da Joia</th>
-            <th>Preço</th>
-            <th>Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tbody>
-        <!-- Exibe esta mensagem APENAS se a lista estiver vazia -->
-        <tr th:if="${#lists.isEmpty(produtos)}">
-            <td colspan="4" style="text-align: center; color: #777; padding: 2rem;">
-                Nenhum produto cadastrado. Clique em "Novo Produto" para começar a sua vitrine.
-            </td>
-        </tr>
+    <div class="alert alert-success" th:if="${mensagemSucesso}"
+         style="margin-bottom:20px;" th:text="${mensagemSucesso}"></div>
 
-        <!-- Faz um loop para cada produto encontrado no banco de dados -->
-        <tr th:each="produto : ${produtos}">
-            <td th:text="${produto.id}">1</td>
-            <td th:text="${produto.nome}">Nome da Joia</td>
-            <td th:text="|R$ ${produto.valor}|">R$ 0.00</td>
-            <td>
-                <!-- Botão de Editar -->
-                <a th:href="@{/admin/editar/{id}(id=${produto.id})}"
-                   class="btn-primary"
-                   style="background-color: #007bff; font-size: 0.8rem; text-decoration: none; padding: 0.4rem 0.8rem; margin-right: 0.5rem;">
-                    Editar
-                </a>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Material</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="produto : ${produtos}">
+                    <td>
+                        <img class="product-thumb"
+                             th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
+                             th:src="${produto.imagem}"
+                             th:alt="${produto.nome}">
+                        <div class="product-thumb-placeholder"
+                             th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
+                    </td>
+                    <td style="font-weight:500;" th:text="${produto.nome}">Nome</td>
+                    <td>
+                        <span class="badge badge-gold" th:text="${produto.categoria}">Categoria</span>
+                    </td>
+                    <td style="font-size:13px; color:var(--text-muted);"
+                        th:text="${produto.material ?: '—'}">Material</td>
+                    <td style="font-weight:500; color:var(--gold-dark);"
+                        th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 0,00
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a th:href="@{/admin/editar/{id}(id=${produto.id})}"
+                               class="btn btn-outline btn-sm">Editar</a>
+                            <a th:href="@{/admin/excluir/{id}(id=${produto.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Deseja excluir esta joia?')">Excluir</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${produtos.isEmpty()}">
+                    <td colspan="6" style="text-align:center; padding:48px; color:var(--text-muted);">
+                        Nenhum produto cadastrado ainda.
+                        <a th:href="@{/admin/cadastro}" style="color:var(--gold-dark); margin-left:6px;">
+                            Cadastrar primeiro produto →
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-                <!-- Botão de Excluir -->
-                <a th:href="@{/admin/excluir/{id}(id=${produto.id})}"
-                   class="btn-danger"
-                   style="font-size: 0.8rem; text-decoration: none; padding: 0.4rem 0.8rem;"
-                   onclick="return confirm('Tem certeza que deseja excluir esta joia do catálogo?');">
-                    Excluir
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<a th:href="@{/admin/logout}" class="btn-danger">Sair</a>
+</main>
 
 </body>
 </html>
