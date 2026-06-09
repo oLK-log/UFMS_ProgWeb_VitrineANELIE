@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Fragment: navbar do painel admin -->
+<nav th:fragment="navbar-admin" class="navbar-admin">
+    <div class="brand" style="display:flex; align-items:center; gap:10px;">
+        <img th:src="@{/logo3.png}" alt="ANELIE"
+             style="height:42px; width:auto; object-fit:contain;">
+        <span style="color:#7a7068; font-size:13px; font-weight:300;">— Painel</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+        <a th:href="@{/admin/inicio}" th:classappend="${currentPage == 'inicio'} ? 'active'">
+            Produtos
+        </a>
+        <a th:href="@{/admin/cadastro}" th:classappend="${currentPage == 'cadastro'} ? 'active'">
+            Novo produto
+        </a>
+        <a th:href="@{/}" style="margin-left:8px; color:#b0a898;">
+            Ver vitrine
+        </a>
+        <a th:href="@{/admin/logout}" class="logout" style="margin-left:8px;">
+            Sair
+        </a>
+    </div>
+</nav>
+
+</body>
+</html>
