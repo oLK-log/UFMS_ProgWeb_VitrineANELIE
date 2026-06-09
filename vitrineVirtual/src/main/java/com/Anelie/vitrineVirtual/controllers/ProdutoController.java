@@ -39,23 +39,11 @@ public class ProdutoController {
         return "detalhes_produto";
     }
 
-    // Carrinho — gerenciado por localStorage, só retorna a view
-    @GetMapping("/carrinho")
-    public String exibirCarrinho() {
-        return "carrinho";
-    }
-
-    // Checkout — formulário de dados do cliente
-    @GetMapping("/checkout")
-    public String exibirCheckout() {
-        return "checkout";
-    }
-
     // Pedido finalizado — tela de conclusão com copia/cola
-    @GetMapping("/pedido-finalizado")
-    public String exibirPedidoFinalizado() {
-        return "pedido_finalizado";
-    }
+    // @GetMapping("/pedido-finalizado")
+    // public String exibirPedidoFinalizado() {
+    // return "pedido_finalizado";
+    // }
 
     // ── Área Lojista ──────────────────────────────────────────────────────────
 
