@@ -139,86 +139,113 @@
 <div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
 
 <script>
-function formatBRL(v) {
-    return 'R$ ' + Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
-
-// Renderiza resumo lateral
-function renderResumo() {
-    const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
-    if (carrinho.length === 0) {
-        window.location.href = '/carrinho';
-        return;
+    function formatBRL(v) {
+        return 'R$ ' + Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
-    let total = 0;
-    const html = carrinho.map(item => {
-        const sub = item.valor * item.quantidade;
-        total += sub;
-        return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f0ea;">
+
+    // Renderiza o resumo lateral puxando do localStorage
+    function renderResumo() {
+        const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+        if (carrinho.length === 0) {
+            window.location.href = '/carrinho';
+            return;
+        }
+        let total = 0;
+        const html = carrinho.map(item => {
+            const sub = item.valor * item.quantidade;
+            total += sub;
+            return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f0ea;">
             <span>${item.nome} × ${item.quantidade}</span>
             <span>${formatBRL(sub)}</span>
         </div>`;
-    }).join('');
-    document.getElementById('resumo-itens').innerHTML = html;
-    document.getElementById('resumo-total').textContent = formatBRL(total);
+        }).join('');
 
-    const qtd = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
-    const el = document.getElementById('cart-count');
-    if (el) el.textContent = qtd;
-}
+        document.getElementById('resumo-itens').innerHTML = html;
+        document.getElementById('resumo-total').textContent = formatBRL(total);
 
-// Exibe/oculta campos de endereço
-function alternarEntrega() {
-    const entrega = document.getElementById('entrega-domicilio').checked;
-    document.getElementById('campos-endereco').style.display = entrega ? 'flex' : 'none';
-
-    document.getElementById('label-retirada').style.borderColor =
-        !entrega ? 'var(--gold)' : 'var(--cream-2)';
-    document.getElementById('label-entrega').style.borderColor =
-        entrega ? 'var(--gold)' : 'var(--cream-2)';
-}
-// Estado inicial
-document.getElementById('label-retirada').style.borderColor = 'var(--gold)';
-
-function finalizarPedido() {
-    const nome = document.getElementById('nome').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const telefone = document.getElementById('telefone').value.trim();
-    const modoEntrega = document.querySelector('input[name="entrega"]:checked').value;
-    const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
-
-    if (!nome || !email || !telefone) {
-        alert('Preencha todos os campos obrigatórios.');
-        return;
+        const qtd = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
+        const el = document.getElementById('cart-count');
+        if (el) el.textContent = qtd;
     }
 
-    if (modoEntrega === 'entrega') {
-        const endereco = document.getElementById('endereco').value.trim();
-        const cidade = document.getElementById('cidade').value.trim();
-        if (!endereco || !cidade) {
-            alert('Preencha o endereço de entrega.');
+    // Exibe/oculta campos de endereço dependendo do Radio Button
+    function alternarEntrega() {
+        const entrega = document.getElementById('entrega-domicilio').checked;
+        document.getElementById('campos-endereco').style.display = entrega ? 'flex' : 'none';
+
+        document.getElementById('label-retirada').style.borderColor =
+            !entrega ? 'var(--gold)' : 'var(--cream-2)';
+        document.getElementById('label-entrega').style.borderColor =
+            entrega ? 'var(--gold)' : 'var(--cream-2)';
+    }
+
+    // Estado inicial das bordas
+    document.getElementById('label-retirada').style.borderColor = 'var(--gold)';
+
+    async function finalizarPedido() {
+        const nome = document.getElementById('nome').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const telefone = document.getElementById('telefone').value.trim();
+        const modoEntrega = document.querySelector('input[name="entrega"]:checked').value;
+        const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
+
+        if (!nome || !email || !telefone) {
+            alert('Preencha todos os campos obrigatórios (Nome, E-mail e Telefone).');
             return;
+        }
+
+        if (modoEntrega === 'entrega') {
+            const endereco = document.getElementById('endereco').value.trim();
+            const cidade = document.getElementById('cidade').value.trim();
+            if (!endereco || !cidade) {
+                alert('Preencha o endereço de entrega.');
+                return;
+            }
+        }
+
+        const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+
+        const dadosPedido = {
+            cliente: { nome, email, telefone },
+            entrega: {
+                modo: modoEntrega,
+                endereco: modoEntrega === 'entrega' ? document.getElementById('endereco').value : null,
+                cidade:   modoEntrega === 'entrega' ? document.getElementById('cidade').value : null,
+                cep:      modoEntrega === 'entrega' ? document.getElementById('cep').value : null,
+            },
+            pagamento,
+            itens: carrinho
+        };
+
+        const btn = document.querySelector('button[onclick="finalizarPedido()"]');
+        btn.disabled = true;
+        btn.textContent = 'Processando pedido...';
+
+        try {
+            const response = await fetch('/api/pedidos/finalizar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosPedido)
+            });
+
+            if (response.ok) {
+                localStorage.setItem('pedidoAtual', JSON.stringify(dadosPedido));
+                window.location.href = '/pedido-finalizado';
+            } else {
+                alert('Ocorreu um erro ao processar o seu pedido. Verifique os dados e tente novamente.');
+                btn.disabled = false;
+                btn.textContent = 'Gerar pedido →';
+            }
+        } catch (error) {
+            console.error("Erro na comunicação com a API:", error);
+            alert('Erro de conexão com o servidor. Tente novamente mais tarde.');
+            btn.disabled = false;
+            btn.textContent = 'Gerar pedido →';
         }
     }
 
-    // Salva dados do cliente para a próxima tela
-    const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
-    const dadosPedido = {
-        cliente: { nome, email, telefone },
-        entrega: {
-            modo: modoEntrega,
-            endereco: modoEntrega === 'entrega' ? document.getElementById('endereco').value : null,
-            cidade:   modoEntrega === 'entrega' ? document.getElementById('cidade').value : null,
-            cep:      modoEntrega === 'entrega' ? document.getElementById('cep').value : null,
-        },
-        pagamento,
-        itens: carrinho
-    };
-    localStorage.setItem('pedidoAtual', JSON.stringify(dadosPedido));
-    window.location.href = '/pedido-finalizado';
-}
-
-renderResumo();
+    // Inicia a renderização assim que a página carrega
+    renderResumo();
 </script>
 
 </body>

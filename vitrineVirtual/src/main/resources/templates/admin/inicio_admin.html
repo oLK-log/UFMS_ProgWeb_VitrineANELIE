@@ -24,13 +24,15 @@
         <h2>Painel do Lojista</h2>
         <div>
             <a th:href="@{/admin/cadastro}" class="btn-primary">Novo Produto</a>
-            <button id="btnSair" class="btn-danger">Sair</button>
+            <a th:href="@{/admin/logout}" class="btn-danger">Sair</a>
         </div>
     </header>
+
     <div th:if="${mensagemSucesso}"
          style="background-color: #d4edda; color: #155724; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; border: 1px solid #c3e6cb; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
         <span th:text="${mensagemSucesso}">Mensagem de sucesso</span>
     </div>
+
     <h3>Meus Produtos Cadastrados</h3>
 
     <table>
@@ -43,28 +45,23 @@
         </tr>
         </thead>
         <tbody>
-        <tbody>
-        <!-- Exibe esta mensagem APENAS se a lista estiver vazia -->
         <tr th:if="${#lists.isEmpty(produtos)}">
             <td colspan="4" style="text-align: center; color: #777; padding: 2rem;">
                 Nenhum produto cadastrado. Clique em "Novo Produto" para começar a sua vitrine.
             </td>
         </tr>
 
-        <!-- Faz um loop para cada produto encontrado no banco de dados -->
         <tr th:each="produto : ${produtos}">
             <td th:text="${produto.id}">1</td>
             <td th:text="${produto.nome}">Nome da Joia</td>
             <td th:text="|R$ ${produto.valor}|">R$ 0.00</td>
             <td>
-                <!-- Botão de Editar -->
                 <a th:href="@{/admin/editar/{id}(id=${produto.id})}"
                    class="btn-primary"
                    style="background-color: #007bff; font-size: 0.8rem; text-decoration: none; padding: 0.4rem 0.8rem; margin-right: 0.5rem;">
                     Editar
                 </a>
 
-                <!-- Botão de Excluir -->
                 <a th:href="@{/admin/excluir/{id}(id=${produto.id})}"
                    class="btn-danger"
                    style="font-size: 0.8rem; text-decoration: none; padding: 0.4rem 0.8rem;"
@@ -76,8 +73,6 @@
         </tbody>
     </table>
 </div>
-
-<a th:href="@{/admin/logout}" class="btn-danger">Sair</a>
 
 </body>
 </html>

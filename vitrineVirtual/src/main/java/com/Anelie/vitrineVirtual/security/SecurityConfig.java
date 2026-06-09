@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Rota Públicas(O Cliente acessando o catálogo)
                         // aqui eh o que vamos permitir um user comum acessar
-                        .requestMatchers("/", "/produtos/**","/carrinho/**", "/auth/**", "/login", "/recuperar-senha", "/redefinir-senha", "/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers("/", "/produto/**", "/produtos/**", "/carrinho/**", "/checkout", "/pedido-finalizado", "/api/pedidos/**", "/auth/**", "/login", "/recuperar-senha", "/redefinir-senha", "/css/**", "/js/**", "/img/**", "/*.png", "/*.jpg").permitAll()
 
                         // Rotas Privadas, tipo Lojista fazendo o CRUD)
                         .requestMatchers("/admin/**").authenticated()
