@@ -20,31 +20,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Desabilita CSRF (segurança será via JWT (Stateless))
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configure(http))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Aqui definimos quem entra onde
                 .authorizeHttpRequests(auth -> auth
-                        // Rotas Públicas (O Cliente acessando o catálogo e o fluxo de compra)
-                        .requestMatchers("/", "/error","/produto/**","/produtos/**","/carrinho/**","/checkout",
-                                "/pedido-finalizado","/api/pedidos/**", "/auth/**","/login","/recuperar-senha",
-                                "/redefinir-senha","/css/**", "/js/**", "/img/**","/*.png","/*.jpg","/uploads/**"
-                        ).permitAll()
+                        // Rotas Públicas
+                        .requestMatchers(
+                                "/", "/error",
+                                "/produto/**", "/produtos/**",
+                                "/carrinho", "/carrinho/**",
+                                "/checkout", "/checkout/**",
+                                "/pedido-finalizado",
+                                "/api/pedidos/**",
+                                "/auth/**",
+                                "/login", "/recuperar-senha", "/redefinir-senha",
+                                "/css/**", "/js/**", "/img/**",
+                                "/*.jpg", "/*.jpeg", "/*.png", "/*.gif", "/*.webp",
+                                "/static/**", "/images/**", "/uploads/**")
+                        .permitAll()
 
-                        // Rotas Privadas, tipo Lojista fazendo o CRUD
+                        // Rotas Privadas
                         .requestMatchers("/admin/**").authenticated()
 
-                        // Qualquer outra rota n mapeada eh bloqueada
-                        .anyRequest().authenticated()
+                        // Para testes locais — libera o restante
+                        .anyRequest().permitAll()
 
-                ).addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                ).addFilterBefore(jwtAuthFilter,
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Usando o BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -52,7 +59,8 @@ public class SecurityConfig {
 
     @Bean
     public org.springframework.security.authentication.AuthenticationManager authenticationManager(
-            org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration configuration) throws Exception {
+            org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration configuration)
+            throws Exception {
         return configuration.getAuthenticationManager();
     }
 }

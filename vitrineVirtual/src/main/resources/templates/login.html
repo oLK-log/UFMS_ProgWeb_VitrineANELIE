@@ -22,7 +22,7 @@
             E-mail ou senha incorretos. Tente novamente.
         </div>
 
-        <form class="auth-form" th:action="@{/auth/login}" method="post">
+        <div class="auth-form" id="form-login">
 
             <div class="form-group">
                 <label for="login">E-mail</label>
@@ -36,11 +36,15 @@
                        placeholder="••••••••" required autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full">
+            <div class="alert alert-danger" id="msg-erro" style="display:none;">
+                E-mail ou senha incorretos. Tente novamente.
+            </div>
+
+            <button type="button" class="btn btn-primary btn-full" onclick="fazerLogin()">
                 Entrar
             </button>
 
-        </form>
+        </div>
 
         <div class="auth-footer-link">
             <a th:href="@{/recuperar-senha}">Esqueceu sua senha?</a>
@@ -48,6 +52,43 @@
 
     </div>
 </div>
+
+<script>
+async function fazerLogin() {
+    const login = document.getElementById('login').value;
+    const senha = document.getElementById('senha').value;
+    const msgErro = document.getElementById('msg-erro');
+
+    if (!login || !senha) {
+        msgErro.style.display = 'block';
+        msgErro.textContent = 'Preencha e-mail e senha.';
+        return;
+    }
+
+    try {
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login, senha })
+        });
+
+        if (response.ok) {
+            window.location.href = '/admin/inicio';
+        } else {
+            msgErro.style.display = 'block';
+            msgErro.textContent = 'E-mail ou senha incorretos. Tente novamente.';
+        }
+    } catch (error) {
+        msgErro.style.display = 'block';
+        msgErro.textContent = 'Erro ao conectar. Tente novamente.';
+    }
+}
+
+// Permite pressionar Enter para logar
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') fazerLogin();
+});
+</script>
 
 </body>
 </html>

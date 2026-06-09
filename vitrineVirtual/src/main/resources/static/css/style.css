@@ -141,7 +141,7 @@ img { max-width: 100%; display: block; }
 .navbar-admin .brand span { color: var(--white); font-weight: 300; }
 .navbar-admin nav { display: flex; align-items: center; gap: 8px; }
 .navbar-admin nav a {
-    color: #b0a898;
+    color: #ffffff !important;
     padding: 6px 14px;
     border-radius: var(--radius);
     font-size: 14px;
