@@ -2,6 +2,8 @@ package com.Anelie.vitrineVirtual.models;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "produtos")
@@ -23,6 +25,9 @@ public class Produto {
     private BigDecimal valor;
     @Column(name = "data_cadastro", updatable = false)
     private LocalDateTime dataCadastro;
+    private boolean destaque;
+    private boolean oferta;
+
 
     @PrePersist
     protected void inCreate() {
@@ -46,5 +51,18 @@ public class Produto {
     public void setValor(BigDecimal valor) { this.valor = valor; }
     public LocalDateTime getDataCadastro() { return dataCadastro; }
     public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
+    public boolean isDestaque() {
+        return destaque;
+    }
+    public void setDestaque(boolean destaque) {
+        this.destaque = destaque;
+    }
+
+    public boolean isOferta() {
+        return oferta;
+    }
+    public void setOferta(boolean oferta) {
+        this.oferta = oferta;
+    }
 
 }

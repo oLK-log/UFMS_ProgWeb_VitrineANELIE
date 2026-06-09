@@ -25,6 +25,9 @@
     margin: 0;
     padding: 0;
 }
+html {
+    scroll-behavior: smooth;
+}
 
 body {
     font-family: var(--font-sans);
@@ -108,7 +111,7 @@ img { max-width: 100%; display: block; }
 /* ── CATÁLOGO / VITRINE CLIENTE ────────── */
 .catalog-body { background: var(--white); margin: 0; }
 .catalog-container { display: flex; max-width: 100%; min-height: 100vh; }
-.catalog-main { flex: 1; padding: 20px 60px 60px 60px; }
+.catalog-main { flex: 1; padding: 20px 60px 60vh 60px; }
 .catalog-header { text-align: center; padding: 40px 20px; }
 .catalog-logo { height: 90px; margin: 0 auto 10px auto; filter:brightness(0); }
 .catalog-header h1 { font-family: var(--font-sans); font-weight: 400; font-size: 24px; letter-spacing: 0.05em; }

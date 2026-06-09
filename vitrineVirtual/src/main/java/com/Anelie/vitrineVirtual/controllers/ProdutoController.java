@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.PageRequest;
 
 @Controller
 public class ProdutoController {
@@ -28,8 +29,24 @@ public class ProdutoController {
     // --- ÁREA CLIENTE ---
     @GetMapping("/")
     public String exibirVitrine(Model model) {
-        List<Produto> listaDeProdutos = produtoRepository.findAll();
-        model.addAttribute("produtos", listaDeProdutos);
+        // Definição do valor limite de produtos mais recentes (ex. 4 últimos)
+        int limiteProdutosRecentes = 4;
+
+        // Carrega as listas filtradas do banco de dados
+        List<Produto> produtosDestaque = produtoRepository.findByDestaqueTrue();
+        List<Produto> produtosOferta = produtoRepository.findByOfertaTrue();
+        List<Produto> produtosRecentes = produtoRepository.findByOrderByDataCadastroDesc(
+                PageRequest.of(0, limiteProdutosRecentes)
+        );
+
+        //buscar catalogo
+        List<Produto> todosProdutos = produtoRepository.findAll();
+
+        // Envia cada lista separada para o Thymeleaf
+        model.addAttribute("produtosDestaque", produtosDestaque);
+        model.addAttribute("produtosOferta", produtosOferta);
+        model.addAttribute("produtosRecentes", produtosRecentes);
+        model.addAttribute("todosProdutos", todosProdutos);
         return "vitrine";
     }
 

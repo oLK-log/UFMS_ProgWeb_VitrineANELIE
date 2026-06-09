@@ -16,11 +16,10 @@
 <div class="catalog-container">
 
     <main class="catalog-main">
-
-        <section class="catalog-section">
-            <h2>OFERTAS</h2>
+        <section class="catalog-section" id="destaques">
+            <h2>DESTAQUES</h2>
             <div class="catalog-grid">
-                <a th:each="produto : ${produtos}" th:href="@{/produto/{id}(id=${produto.id})}" class="catalog-card">
+                <a th:each="produto : ${produtosDestaque}" th:href="@{/produto/{id}(id=${produto.id})}" class="catalog-card">
                     <div class="img-wrapper">
                         <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}" th:src="${produto.imagem}" th:alt="${produto.nome}">
                         <div class="placeholder" th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
@@ -32,11 +31,40 @@
                 </a>
             </div>
         </section>
-
-        <section class="catalog-section">
+        <section class="catalog-section" id="recentes">
             <h2>ADICIONADOS RECENTEMENTE</h2>
             <div class="catalog-grid">
-                <a th:each="produto : ${produtos}" th:href="@{/produto/{id}(id=${produto.id})}" class="catalog-card">
+                <a th:each="produto : ${produtosRecentes}" th:href="@{/produto/{id}(id=${produto.id})}" class="catalog-card">
+                    <div class="img-wrapper">
+                        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}" th:src="${produto.imagem}" th:alt="${produto.nome}">
+                        <div class="placeholder" th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
+                    </div>
+                    <div class="card-info">
+                        <p class="name" th:text="${produto.nome}">Nome da Joia</p>
+                        <p class="price" th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+        <section class="catalog-section" id="todos">
+            <h2>TODOS OS PRODUTOS</h2>
+            <div class="catalog-grid">
+                <a th:each="produto : ${todosProdutos}" th:href="@{/produto/{id}(id=${produto.id})}" class="catalog-card">
+                    <div class="img-wrapper">
+                        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}" th:src="${produto.imagem}" th:alt="${produto.nome}">
+                        <div class="placeholder" th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
+                    </div>
+                    <div class="card-info">
+                        <p class="name" th:text="${produto.nome}">Nome da Joia</p>
+                        <p class="price" th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+        <section class="catalog-section" id="ofertas">
+            <h2>OFERTAS</h2>
+            <div class="catalog-grid">
+                <a th:each="produto : ${produtosOferta}" th:href="@{/produto/{id}(id=${produto.id})}" class="catalog-card">
                     <div class="img-wrapper">
                         <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}" th:src="${produto.imagem}" th:alt="${produto.nome}">
                         <div class="placeholder" th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
@@ -59,9 +87,10 @@
         </div>
 
         <nav class="sidebar-menu">
-            <a href="#" class="menu-item highlight">DESTAQUE</a>
-            <a href="#" class="menu-item">OFERTAS</a>
-            <a href="#" class="menu-item">ADICIONADOS R.</a>
+            <a href="#destaques" class="menu-item">DESTAQUE</a>
+            <a href="#recentes" class="menu-item">ADICIONADOS R.</a>
+            <a href="#todos" class="menu-item">TODOS OS PRODUTOS</a>
+            <a href="#ofertas" class="menu-item">OFERTAS</a>
 
             <div class="menu-divider">CATEGORIAS</div>
 
@@ -87,6 +116,40 @@
             'R$ ' + total.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
     atualizarCarrinhoSidebar();
+    //o item selecionado entre Destaque/Ofertas/Recentes Add muda conforme a area é selecionada ou se movimenta pela pag
+    document.addEventListener("DOMContentLoaded", function() {
+        const sections = document.querySelectorAll(".catalog-section");
+        const navLinks = document.querySelectorAll(".sidebar-menu .menu-item");
+
+        function atualizarMenu() {
+            // Define o primeiro ID como padrão
+            let current = sections.length > 0 ? sections[0].getAttribute("id") : "";
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            // Se o scroll somado ao tamanho da tela alcançar o fundo da página vai automaticamente para ofertas
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10) {
+                current = sections[sections.length - 1].getAttribute("id");
+            }
+
+            // Atualiza as classes no menu
+            navLinks.forEach(link => {
+                link.classList.remove("highlight");
+                if (link.getAttribute("href") === `#${current}`) {
+                    link.classList.add("highlight");
+                }
+            });
+        }
+        // Fica observando sempre que o usuário rodar
+        window.addEventListener("scroll", atualizarMenu);
+        // define o primeiro botão ao abrir a tela
+        atualizarMenu();
+    });
 </script>
 
 </body>
