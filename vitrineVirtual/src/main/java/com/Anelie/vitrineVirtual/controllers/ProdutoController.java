@@ -67,4 +67,13 @@ public class ProdutoController {
         redirectAttributes.addFlashAttribute("mensagemSucesso", "Produto Deletado com Sucesso!");
         return "redirect:/admin/inicio";
     }
+    //busca joia pelo id e rederiza a tela de detalhes
+    @GetMapping("/produto/{id}")
+    public String exibirDetalhes(@PathVariable("id") Long id, Model model) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Joia não encontrada com o ID: " + id));
+
+        model.addAttribute("produto", produto);
+        return "detalhes_produto"; // Abre o arquivo produto.html que você mandou
+    }
 }
