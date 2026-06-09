@@ -30,7 +30,7 @@ public class WebController {
     public String telaRedefinirSenha(@RequestParam(name = "token", required = false) String token, Model model) {
         // Captura o ?token= da URL e envia para o Thymeleaf embutir no HTML
         model.addAttribute("token", token);
-        return "redefinir_senha"; // Busca redefinir_senha.html
+        return "alterar_senha"; // Busca redefinir_senha.html
     }
 
     @GetMapping("/produto/{id}")

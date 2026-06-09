@@ -90,8 +90,16 @@ public class ProdutoController {
 
     @GetMapping("/admin/excluir/{id}")
     public String excluirProduto(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        produtoRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("mensagemSucesso", "Produto deletado com sucesso!");
+        try {
+            produtoRepository.deleteById(id);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Joia deletada do catálogo com sucesso!");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // O banco de dadosbloqueia a exclusão porque a joia já faz parte de um pedido
+            redirectAttributes.addFlashAttribute("mensagemErro", "Não é possível excluir esta joia pois ela já está vinculada ao histórico de vendas de um cliente.");
+        } catch (Exception e) {
+            // outros erro inesperado
+            redirectAttributes.addFlashAttribute("mensagemErro", "Ocorreu um erro interno ao tentar excluir a joia.");
+        }
         return "redirect:/admin/inicio";
     }
 }

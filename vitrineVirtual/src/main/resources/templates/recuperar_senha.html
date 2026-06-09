@@ -6,14 +6,66 @@
     <title>Recuperar Senha - Vitrine ANELIE</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        .success-message { color: #28a745; margin-bottom: 1rem; display: none; font-weight: bold; text-align: center; }
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+            background-color: #fdecea;
+            padding: 8px;
+        }
+        .success-message {
+            color: var(--success);
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+            background-color: #eafaf1;
+            padding: 8px;
+        }
+        .btn-login {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background-color: var(--white);
+            color: var(--text);
+            border: 1px solid var(--white);
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            transition: 0.2s;
+        }
+        .btn-login:hover {
+            background-color: var(--ice-blue-dark);
+            border-color: var(--ice-blue-dark);
+            color: var(--white);
+        }
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .back-link:hover {
+            color: var(--text);
+            text-decoration: underline;
+        }
     </style>
 </head>
-<body>
+<body class="auth-page">
 
-<div class="login-container">
-    <h2>Recuperar Senha</h2>
-    <p style="font-size: 0.9em; color: #666; margin-bottom: 1.5rem;">
+<a th:href="@{/login}" class="back-link">← Voltar ao login</a>
+
+<div class="auth-header">
+    <img th:src="@{/logo3.png}" alt="ANELIE Logo" class="auth-logo">
+</div>
+
+<div class="auth-card">
+
+    <p id="texto-explicativo" style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">
         Digite o e-mail cadastrado. Enviaremos um link seguro para você criar uma nova senha.
     </p>
 
@@ -26,14 +78,11 @@
     <form id="formRecuperar">
         <div class="form-group">
             <label for="email">E-mail Cadastrado</label>
-            <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+            <input type="email" id="email" name="email" required>
         </div>
-        <button type="submit" id="btnEnviar">Enviar Link de Recuperação</button>
+        <button type="submit" id="btnEnviar" class="btn-login">Enviar Link</button>
     </form>
 
-    <div style="margin-top: 1rem; text-align: center; font-size: 0.9em;">
-        <a th:href="@{/login}">Voltar para o Login</a>
-    </div>
 </div>
 
 <script>
@@ -46,20 +95,19 @@
         btn.textContent = "Enviando...";
 
         try {
-            // rota back
             const response = await fetch('/auth/solicitar-recuperacao', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: email })
             });
 
-            // evita ataques de enumercao
             document.getElementById('formRecuperar').style.display = 'none';
+            document.getElementById('texto-explicativo').style.display = 'none';
             document.getElementById('mensagem-sucesso').style.display = 'block';
         } catch (error) {
             document.getElementById('mensagem-erro').style.display = 'block';
             btn.disabled = false;
-            btn.textContent = "Enviar Link de Recuperação";
+            btn.textContent = "Enviar Link";
         }
     });
 </script>

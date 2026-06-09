@@ -5,131 +5,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedido Finalizado — Vitrine ANELIE</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .back-link:hover {
+            color: var(--text);
+            text-decoration: underline;
+        }
+
+        .success-icon {
+            width: 64px; height: 64px;
+            background: #eafaf1; color: var(--success);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; margin: 0 auto 20px auto;
+        }
+
+        /* Caixa do recibo estilo  */
+        .copy-box {
+            background: var(--white);
+            color: var(--text);
+            border: 1px solid var(--ice-blue-dark);
+            padding: 20px;
+            font-family: monospace, Courier, sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: left;
+            margin: 24px 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            height: 300px;
+            overflow-y: auto; /* Adiciona scroll se o pedido tiver muitos itens */
+        }
+
+        .btn-copy {
+            width: 100%; padding: 12px;
+            background-color: var(--text); color: var(--white);
+            border: none; cursor: pointer;
+            font-family: var(--font-sans); font-size: 15px; font-weight: 500;
+            transition: 0.2s; margin-bottom: 12px;
+        }
+        .btn-copy:hover { opacity: 0.8; }
+
+        .btn-outline-custom {
+            width: 100%; padding: 12px;
+            background-color: transparent; color: var(--text);
+            border: 1px solid var(--text); cursor: pointer;
+            font-family: var(--font-sans); font-size: 15px; font-weight: 500;
+            transition: 0.2s; text-align: center; display: block;
+        }
+        .btn-outline-custom:hover { background-color: var(--text); color: var(--white); }
+    </style>
 </head>
-<body>
+<body class="auth-page">
 
-<!-- Navbar -->
-<div th:replace="~{fragments/navbar_footer_cliente :: navbar-cliente}"></div>
+<a th:href="@{/}" class="back-link" onclick="limparCarrinho()">← Voltar à vitrine</a>
 
-<div class="success-page">
+<div class="auth-header">
+    <img th:src="@{/logo3.png}" alt="ANELIE Logo" class="auth-logo">
+</div>
 
-    <img th:src="@{/logo2.png}" alt="ANELIE"
-         style="height:90px; width:auto; object-fit:contain; margin: 0 auto 20px; display:block;">
+<div class="auth-card" style="max-width: 500px; text-align: center;">
 
     <div class="success-icon">✓</div>
 
-    <h1 style="font-family:var(--font-serif); font-size:28px; margin-bottom:8px;">
-        Pedido gerado!
-    </h1>
-    <p style="color:var(--text-muted); font-size:15px; line-height:1.6; margin-bottom:4px;">
-        Copie o resumo abaixo e envie para o lojista pelo WhatsApp ou mensagem.
-    </p>
+    <h2 style="font-weight: 400; margin-bottom: 8px; font-size: 24px;">Pedido gerado!</h2>
+    <p style="color: var(--text-muted); font-size: 14px;">Copie o resumo abaixo e envie para o lojista pelo WhatsApp.</p>
 
-    <!-- Caixa do resumo para copiar -->
     <div class="copy-box" id="resumo-texto">Carregando pedido...</div>
 
-    <!-- Botão copiar -->
-    <button class="btn btn-primary btn-full" style="font-size:15px; padding:13px;"
-            onclick="copiarResumo()" id="btn-copiar">
+    <button class="btn-copy" onclick="copiarResumo()" id="btn-copiar">
         📋 Copiar resumo do pedido
     </button>
 
-    <div style="margin-top:16px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <a th:href="@{/}" class="btn btn-outline" onclick="limparCarrinho()">
-            Voltar à vitrine
-        </a>
-    </div>
-
+    <a th:href="@{/}" class="btn-outline-custom" onclick="limparCarrinho()">
+        Voltar à vitrine
+    </a>
 </div>
 
-<!-- Footer -->
-<div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
-
 <script>
-function formatBRL(v) {
-    return 'R$ ' + Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
-
-function gerarTexto(pedido) {
-    const d = new Date();
-    const data = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-
-    let texto = '━━━━━━━━━━━━━━━━━━━━━━\n';
-    texto += '💍 PEDIDO — ANELIE JOIAS\n';
-    texto += '━━━━━━━━━━━━━━━━━━━━━━\n\n';
-
-    texto += `📅 Data: ${data}\n\n`;
-
-    texto += `👤 Cliente: ${pedido.cliente.nome}\n`;
-    texto += `📧 E-mail: ${pedido.cliente.email}\n`;
-    texto += `📱 Telefone: ${pedido.cliente.telefone}\n\n`;
-
-    texto += '🛒 Itens do pedido:\n';
-    let total = 0;
-    pedido.itens.forEach(item => {
-        const sub = item.valor * item.quantidade;
-        total += sub;
-        texto += `  • ${item.nome} × ${item.quantidade} — ${formatBRL(sub)}\n`;
-    });
-
-    texto += `\n💰 Total: ${formatBRL(total)}\n\n`;
-
-    const modos = { retirada: 'Retirada na loja', entrega: 'Entrega em domicílio' };
-    texto += `🚚 Entrega: ${modos[pedido.entrega.modo] || pedido.entrega.modo}\n`;
-    if (pedido.entrega.modo === 'entrega') {
-        texto += `📍 Endereço: ${pedido.entrega.endereco}, ${pedido.entrega.cidade}`;
-        if (pedido.entrega.cep) texto += ` — CEP: ${pedido.entrega.cep}`;
-        texto += '\n';
+    function formatBRL(v) {
+        return 'R$ ' + Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    const pagamentos = { pix: 'Pix', dinheiro: 'Dinheiro', cartao: 'Cartão (débito/crédito)' };
-    texto += `💳 Pagamento: ${pagamentos[pedido.pagamento] || pedido.pagamento}\n`;
+    function gerarTexto(pedido) {
+        const d = new Date();
+        const data = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
-    texto += '\n━━━━━━━━━━━━━━━━━━━━━━';
-    return texto;
-}
+        let texto = '━━━━━━━━━━━━━━━━━━━━━━\n';
+        texto += '💍 PEDIDO — ANELIE JOIAS\n';
+        texto += '━━━━━━━━━━━━━━━━━━━━━━\n\n';
 
-function copiarResumo() {
-    const texto = document.getElementById('resumo-texto').textContent;
-    navigator.clipboard.writeText(texto).then(() => {
-        const btn = document.getElementById('btn-copiar');
-        btn.textContent = '✓ Copiado!';
-        btn.style.background = 'var(--success)';
-        setTimeout(() => {
-            btn.textContent = '📋 Copiar resumo do pedido';
-            btn.style.background = '';
-        }, 2000);
-    }).catch(() => {
-        // fallback para browsers sem clipboard API
-        const el = document.getElementById('resumo-texto');
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-        alert('Resumo copiado!');
-    });
-}
+        texto += `📅 Data: ${data}\n\n`;
 
-function limparCarrinho() {
-    localStorage.removeItem('carrinho');
-    localStorage.removeItem('pedidoAtual');
-}
+        texto += `👤 Cliente: ${pedido.cliente.nome}\n`;
+        texto += `📧 E-mail: ${pedido.cliente.email}\n`;
+        texto += `📱 Telefone: ${pedido.cliente.telefone}\n\n`;
 
-// Carrega e exibe o pedido
-window.onload = function() {
-    const pedido = JSON.parse(localStorage.getItem('pedidoAtual') || 'null');
-    if (!pedido) {
-        window.location.href = '/';
-        return;
+        texto += '🛒 Itens do pedido:\n';
+        let total = 0;
+        pedido.itens.forEach(item => {
+            const sub = item.valor * item.quantidade;
+            total += sub;
+            texto += `  • ${item.nome} × ${item.quantidade} — ${formatBRL(sub)}\n`;
+        });
+
+        texto += `\n💰 Total: ${formatBRL(total)}\n\n`;
+
+        const modos = { retirada: 'Retirada na loja', entrega: 'Entrega em domicílio' };
+        texto += `🚚 Entrega: ${modos[pedido.entrega.modo] || pedido.entrega.modo}\n`;
+        if (pedido.entrega.modo === 'entrega') {
+            texto += `📍 Endereço: ${pedido.entrega.endereco}, ${pedido.entrega.cidade}`;
+            if (pedido.entrega.cep) texto += ` — CEP: ${pedido.entrega.cep}`;
+            texto += '\n';
+        }
+
+        const pagamentos = { pix: 'Pix', dinheiro: 'Dinheiro', cartao: 'Cartão (débito/crédito)' };
+        texto += `💳 Pagamento: ${pagamentos[pedido.pagamento] || pedido.pagamento}\n`;
+
+        texto += '\n━━━━━━━━━━━━━━━━━━━━━━';
+        return texto;
     }
-    document.getElementById('resumo-texto').textContent = gerarTexto(pedido);
 
-    // Limpa o carrinho após exibir (pedido concluído)
-    localStorage.removeItem('carrinho');
-    const el = document.getElementById('cart-count');
-    if (el) el.textContent = '0';
-};
+    function copiarResumo() {
+        const texto = document.getElementById('resumo-texto').textContent;
+        navigator.clipboard.writeText(texto).then(() => {
+            const btn = document.getElementById('btn-copiar');
+            btn.textContent = '✓ Copiado com sucesso!';
+            btn.style.background = 'var(--success)';
+            btn.style.color = 'var(--white)';
+            setTimeout(() => {
+                btn.textContent = '📋 Copiar resumo do pedido';
+                btn.style.background = 'var(--text)';
+            }, 3000);
+        }).catch(() => {
+            const el = document.getElementById('resumo-texto');
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            alert('Resumo copiado!');
+        });
+    }
+
+    function limparCarrinho() {
+        localStorage.removeItem('carrinho');
+        localStorage.removeItem('pedidoAtual');
+    }
+
+    window.onload = function() {
+        const pedido = JSON.parse(localStorage.getItem('pedidoAtual') || 'null');
+        if (!pedido) {
+            window.location.href = '/';
+            return;
+        }
+        document.getElementById('resumo-texto').textContent = gerarTexto(pedido);
+
+        localStorage.removeItem('carrinho');
+        const el = document.getElementById('cart-count');
+        if (el) el.textContent = '0';
+    };
 </script>
 
 </body>

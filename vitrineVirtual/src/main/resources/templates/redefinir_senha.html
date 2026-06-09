@@ -5,11 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redefinir Senha - Vitrine ANELIE</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+            background-color: #fdecea;
+            padding: 8px;
+        }
+        .btn-login {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background-color: var(--white);
+            color: var(--text);
+            border: 1px solid var(--white);
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            transition: 0.2s;
+        }
+        .btn-login:hover {
+            background-color: var(--ice-blue-dark);
+            border-color: var(--ice-blue-dark);
+            color: var(--white);
+        }
+    </style>
 </head>
-<body>
+<body class="auth-page">
 
-<div class="login-container">
-    <h2>Criar Nova Senha</h2>
+<div class="auth-header">
+    <img th:src="@{/logo3.png}" alt="ANELIE Logo" class="auth-logo">
+</div>
+
+<div class="auth-card">
+    <h3 style="font-weight: 400; margin-bottom: 20px; text-align: center; font-size: 18px;">CRIAR NOVA SENHA</h3>
 
     <div id="mensagem-erro" class="error-message">As senhas não coincidem ou o link expirou.</div>
 
@@ -18,15 +50,15 @@
 
         <div class="form-group">
             <label for="novaSenha">Nova Senha</label>
-            <input type="password" id="novaSenha" required placeholder="Digite a nova senha">
+            <input type="password" id="novaSenha" required>
         </div>
 
         <div class="form-group">
             <label for="confirmarSenha">Confirmar Nova Senha</label>
-            <input type="password" id="confirmarSenha" required placeholder="Repita a nova senha">
+            <input type="password" id="confirmarSenha" required>
         </div>
 
-        <button type="submit">Salvar Nova Senha</button>
+        <button type="submit" class="btn-login">Salvar Nova Senha</button>
     </form>
 </div>
 
@@ -37,6 +69,7 @@
         const confirmarSenha = document.getElementById('confirmarSenha').value;
         const token = document.getElementById('token').value;
         const msgErro = document.getElementById('mensagem-erro');
+        const btn = document.querySelector('.btn-login');
 
         if (novaSenha !== confirmarSenha) {
             msgErro.textContent = "As senhas não coincidem!";
@@ -44,8 +77,10 @@
             return;
         }
 
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
         try {
-            // rota back
             const response = await fetch('/auth/salvar-nova-senha', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -58,10 +93,14 @@
             } else {
                 msgErro.textContent = "Erro: Link inválido ou expirado.";
                 msgErro.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Salvar Nova Senha';
             }
         } catch (error) {
             msgErro.textContent = "Erro na comunicação com o servidor.";
             msgErro.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Salvar Nova Senha';
         }
     });
 </script>

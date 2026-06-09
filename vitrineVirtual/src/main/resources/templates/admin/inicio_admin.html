@@ -3,76 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Lojista - Vitrine ANELIE</title>
-
+    <title>Gestão - Vitrine ANELIE</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
-    <style>
-        .dashboard-container { max-width: 1000px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header-admin { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 2px solid #f4f4f4; padding-bottom: 1rem; }
-        .btn-primary { background-color: #28a745; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
-        .btn-danger { background-color: #dc3545; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; }
-    </style>
 </head>
-<body>
+<body class="admin-layout">
 
-<div class="dashboard-container">
-    <header class="header-admin">
-        <h2>Painel do Lojista</h2>
-        <div>
-            <a th:href="@{/admin/cadastro}" class="btn-primary">Novo Produto</a>
-            <a th:href="@{/admin/logout}" class="btn-danger">Sair</a>
-        </div>
-    </header>
+<div class="admin-content">
 
-    <div th:if="${mensagemSucesso}"
-         style="background-color: #d4edda; color: #155724; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; border: 1px solid #c3e6cb; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        <span th:text="${mensagemSucesso}">Mensagem de sucesso</span>
+    <div class="admin-top-logo">
+        <img th:src="@{/logo3.png}" alt="ANELIE Logo">
     </div>
 
-    <h3>Meus Produtos Cadastrados</h3>
+    <div class="admin-action-links">
+        <a th:href="@{/admin/cadastro}">+ Adicionar produto</a>
+    </div>
 
-    <table>
+    <div th:if="${mensagemSucesso}"
+         style="background: var(--ice-blue-dark); color: var(--text); padding: 12px 16px; margin-bottom: 20px; font-weight: 500;">
+        <span th:text="${mensagemSucesso}">Mensagem</span>
+    </div>
+    <div th:if="${mensagemErro}"
+         style="background: #fdecea; color: var(--danger); padding: 12px 16px; margin-bottom: 20px; font-weight: 500; border-left: 4px solid var(--danger);">
+        <span th:text="${mensagemErro}">Mensagem de erro</span>
+    </div>
+
+    <table class="admin-table">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Nome da Joia</th>
-            <th>Preço</th>
+            <th style="width: 80px;">Imagem</th>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Valor</th>
             <th>Ações</th>
         </tr>
         </thead>
         <tbody>
+
         <tr th:if="${#lists.isEmpty(produtos)}">
-            <td colspan="4" style="text-align: center; color: #777; padding: 2rem;">
-                Nenhum produto cadastrado. Clique em "Novo Produto" para começar a sua vitrine.
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Nenhum produto cadastrado no catálogo.
             </td>
         </tr>
 
         <tr th:each="produto : ${produtos}">
-            <td th:text="${produto.id}">1</td>
-            <td th:text="${produto.nome}">Nome da Joia</td>
-            <td th:text="|R$ ${produto.valor}|">R$ 0.00</td>
-            <td>
-                <a th:href="@{/admin/editar/{id}(id=${produto.id})}"
-                   class="btn-primary"
-                   style="background-color: #007bff; font-size: 0.8rem; text-decoration: none; padding: 0.4rem 0.8rem; margin-right: 0.5rem;">
-                    Editar
-                </a>
 
-                <a th:href="@{/admin/excluir/{id}(id=${produto.id})}"
-                   class="btn-danger"
-                   style="font-size: 0.8rem; text-decoration: none; padding: 0.4rem 0.8rem;"
-                   onclick="return confirm('Tem certeza que deseja excluir esta joia do catálogo?');">
-                    Excluir
-                </a>
+            <td>
+                <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
+                     th:src="${produto.imagem}" alt="Foto Joia"
+                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+
+                <div th:if="${produto.imagem == null or produto.imagem.isEmpty()}"
+                     style="width: 50px; height: 50px; background: var(--ice-blue-dark); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--white); border-radius: 4px;">
+                    ✦
+                </div>
             </td>
+
+            <td th:text="${produto.nome}">Nome da Joia</td>
+            <td th:text="${produto.categoria}">Categoria</td>
+            <td th:text="|R$ ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}|">R$ 0,00</td>
+
+            <td>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <a th:href="@{/admin/editar/{id}(id=${produto.id})}" style="color: var(--text); font-weight: 500;">Editar</a>
+                    <span style="color: var(--ice-blue-dark);">|</span>
+                    <a th:href="@{/admin/excluir/{id}(id=${produto.id})}"
+                       class="btn-danger" style="font-weight: 500;"
+                       onclick="return confirm('Tem certeza que deseja excluir esta joia do catálogo?');">Excluir</a>
+                </div>
+            </td>
+
         </tr>
         </tbody>
     </table>
 </div>
+
+<aside class="sidebar-right">
+    <nav class="sidebar-menu">
+        <a href="#" class="sidebar-item active">PRODUTOS</a>
+        <a href="#" class="sidebar-item">CATEGORIAS</a>
+        <a href="#" class="sidebar-item">VENDAS</a>
+    </nav>
+
+    <div style="padding: 0 40px;">
+        <h3 style="font-family: var(--font-sans); font-weight: 400; font-size: 24px; margin-bottom: 8px;">Admin</h3>
+        <a th:href="@{/recuperar-senha}" style="display: block; font-size: 14px; margin-bottom: 4px; color: var(--text-muted); transition: color 0.2s;">Alterar senha</a>
+        <a th:href="@{/admin/logout}" style="display: block; font-size: 14px; color: var(--text-muted); transition: color 0.2s;">Sair</a>
+    </div>
+</aside>
 
 </body>
 </html>

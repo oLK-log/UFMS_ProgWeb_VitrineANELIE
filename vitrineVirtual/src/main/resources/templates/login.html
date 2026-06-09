@@ -4,44 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Lojista - Vitrine ANELIE</title>
-    <link rel="stylesheet" th:href="@{/styles/login.css}" >
-</head>
-<body>
 
-<div class="login-container">
-    <h2>Acesso Restrito</h2>
-    <p>Área exclusiva para o Lojista.</p>
+    <link rel="stylesheet" th:href="@{/css/style.css}" >
+
+    <style>
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+            background-color: #fdecea;
+            padding: 8px;
+        }
+
+        .btn-login {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background-color: var(--white);
+            color: var(--text);
+            border: 1px solid var(--white);
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            transition: 0.2s;
+        }
+        .btn-login:hover {
+            background-color: var(--ice-blue-dark);
+            border-color: var(--ice-blue-dark);
+            color: var(--white);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .back-link:hover {
+            color: var(--text);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="auth-page">
+
+<a th:href="@{/}" class="back-link">← Voltar à vitrine</a>
+
+<div class="auth-header">
+    <img th:src="@{/logo3.png}" alt="ANELIE Logo" class="auth-logo">
+</div>
+
+<div class="auth-card">
 
     <div id="mensagem-erro" class="error-message">Credenciais inválidas. Tente novamente.</div>
 
     <form id="formLogin">
         <div class="form-group">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+            <label for="email">Login</label>
+            <input type="email" id="email" name="email" required>
         </div>
+
         <div class="form-group">
             <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" required placeholder="Sua senha de acesso">
+            <input type="password" id="senha" name="senha" required>
         </div>
-        <button type="submit">Entrar no Painel</button>
-    </form>
 
-    <!-- esqueci senha - Link para a próxima tela  -->
-    <div style="margin-top: 1rem; text-align: center; font-size: 0.9em;">
-        <a th:href="@{/recuperar-senha}">Esqueci minha senha</a>
-    </div>
+        <button type="submit" class="btn-login">Entrar</button>
+
+        <div class="auth-footer-link">
+            <a th:href="@{/recuperar-senha}">esqueceu a senha?</a>
+        </div>
+    </form>
 </div>
 
 <script>
     document.getElementById('formLogin').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Impede a página de recarregar
+        event.preventDefault();
 
         const email = document.getElementById('email').value;
         const senha = document.getElementById('senha').value;
         const msgErro = document.getElementById('mensagem-erro');
 
+        const btn = document.querySelector('.btn-login');
+        btn.disabled = true;
+        btn.textContent = 'Acessando...';
+
         try {
-            // Chama a  rota criada no AuthController
             const response = await fetch('/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -49,16 +101,18 @@
             });
 
             if (response.ok) {
-                //se guardou o cookie ok
                 window.location.href = '/admin/inicio';
             } else {
-                // Se a senha estiver errada, exibe a mensagem
                 msgErro.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Entrar';
             }
         } catch (error) {
             console.error("Erro na comunicação com a API:", error);
             msgErro.textContent = "Erro no servidor. Tente mais tarde.";
             msgErro.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Entrar';
         }
     });
 </script>

@@ -5,107 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout — Vitrine ANELIE</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .back-link:hover {
+            color: var(--text);
+            text-decoration: underline;
+        }
+        .form-section {
+            background: var(--white);
+            border: 1px solid var(--ice-blue-dark);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .form-section h3 {
+            font-weight: 400;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--ice-blue-light);
+            padding-bottom: 8px;
+            font-size: 16px;
+        }
+        .radio-card {
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            padding: 14px; border: 1px solid var(--ice-blue-dark); border-radius: 4px;
+            transition: border-color 0.2s;
+        }
+    </style>
 </head>
-<body>
+<body style="background: var(--white);">
 
-<!-- Navbar -->
-<div th:replace="~{fragments/navbar_footer_cliente :: navbar-cliente}"></div>
+<a th:href="@{/carrinho}" class="back-link">← Voltar ao carrinho</a>
 
-<main class="page-main">
+<div class="auth-header" style="margin-top: 40px;">
+    <img th:src="@{/logo3.png}" alt="ANELIE Logo" class="auth-logo">
+    <h1 style="font-family: var(--font-sans); font-weight: 400; font-size: 22px; letter-spacing: 0.05em; margin-top: 10px;">FINALIZAR PEDIDO</h1>
+</div>
 
-    <h1 class="page-title">Finalizar pedido</h1>
+<main class="page-main" style="max-width: 1000px; margin: 0 auto 60px auto; padding: 0 20px;">
 
     <div style="display:grid; grid-template-columns:1fr 360px; gap:32px; align-items:start;">
 
-        <!-- Formulário -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div style="display:flex; flex-direction:column;">
 
-            <!-- Dados pessoais -->
             <div class="form-section">
                 <h3>Seus dados</h3>
                 <div style="display:flex; flex-direction:column; gap:16px;">
                     <div class="form-group">
                         <label for="nome">Nome completo</label>
-                        <input type="text" id="nome" placeholder="Seu nome" required>
+                        <input type="text" id="nome" placeholder="Seu nome" required style="border: 1px solid var(--ice-blue-dark);">
                     </div>
                     <div class="form-group">
                         <label for="email">E-mail</label>
-                        <input type="email" id="email" placeholder="seu@email.com" required>
+                        <input type="email" id="email" placeholder="seu@email.com" required style="border: 1px solid var(--ice-blue-dark);">
                     </div>
                     <div class="form-group">
                         <label for="telefone">WhatsApp / Telefone</label>
-                        <input type="tel" id="telefone" placeholder="(67) 99999-9999" required>
+                        <input type="tel" id="telefone" placeholder="(67) 99999-9999" required style="border: 1px solid var(--ice-blue-dark);">
                     </div>
                 </div>
             </div>
 
-            <!-- Modo de entrega -->
             <div class="form-section">
                 <h3>Modo de entrega</h3>
                 <div style="display:flex; flex-direction:column; gap:12px;">
 
-                    <label style="display:flex; align-items:center; gap:12px; cursor:pointer;
-                                  padding:14px; border:1.5px solid var(--cream-2); border-radius:var(--radius);
-                                  transition:border-color 0.15s;" id="label-retirada">
+                    <label class="radio-card" id="label-retirada">
                         <input type="radio" name="entrega" value="retirada" id="retirada"
                                onchange="alternarEntrega()" checked
-                               style="width:18px;height:18px;accent-color:var(--gold-dark);">
+                               style="width:18px;height:18px;accent-color:var(--text);">
                         <div>
-                            <p style="font-weight:500;">Retirada na loja</p>
+                            <p style="font-weight:500; font-size: 15px;">Retirada na loja</p>
                             <p style="font-size:13px; color:var(--text-muted);">Combine o horário com o lojista</p>
                         </div>
                     </label>
 
-                    <label style="display:flex; align-items:center; gap:12px; cursor:pointer;
-                                  padding:14px; border:1.5px solid var(--cream-2); border-radius:var(--radius);
-                                  transition:border-color 0.15s;" id="label-entrega">
+                    <label class="radio-card" id="label-entrega">
                         <input type="radio" name="entrega" value="entrega" id="entrega-domicilio"
                                onchange="alternarEntrega()"
-                               style="width:18px;height:18px;accent-color:var(--gold-dark);">
+                               style="width:18px;height:18px;accent-color:var(--text);">
                         <div>
-                            <p style="font-weight:500;">Entrega em domicílio</p>
+                            <p style="font-weight:500; font-size: 15px;">Entrega em domicílio</p>
                             <p style="font-size:13px; color:var(--text-muted);">Informe o endereço abaixo</p>
                         </div>
                     </label>
 
                 </div>
 
-                <!-- Campos de endereço (exibidos ao selecionar entrega) -->
-                <div id="campos-endereco" style="display:none; margin-top:16px; display:flex; flex-direction:column; gap:14px;">
+                <div id="campos-endereco" style="display:none; flex-direction:column; gap:14px; margin-top:16px;">
                     <div class="form-group">
                         <label for="endereco">Endereço completo</label>
-                        <input type="text" id="endereco" placeholder="Rua, número, bairro">
+                        <input type="text" id="endereco" placeholder="Rua, número, bairro" style="border: 1px solid var(--ice-blue-dark);">
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                         <div class="form-group">
                             <label for="cidade">Cidade</label>
-                            <input type="text" id="cidade" placeholder="Cidade">
+                            <input type="text" id="cidade" placeholder="Cidade" style="border: 1px solid var(--ice-blue-dark);">
                         </div>
                         <div class="form-group">
                             <label for="cep">CEP</label>
-                            <input type="text" id="cep" placeholder="00000-000">
+                            <input type="text" id="cep" placeholder="00000-000" style="border: 1px solid var(--ice-blue-dark);">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Forma de pagamento -->
             <div class="form-section">
                 <h3>Forma de pagamento</h3>
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size: 15px;">
                         <input type="radio" name="pagamento" value="pix" checked
-                               style="width:16px;height:16px;accent-color:var(--gold-dark);">
+                               style="width:16px;height:16px;accent-color:var(--text);">
                         <span>Pix</span>
                     </label>
-                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size: 15px;">
                         <input type="radio" name="pagamento" value="dinheiro"
-                               style="width:16px;height:16px;accent-color:var(--gold-dark);">
+                               style="width:16px;height:16px;accent-color:var(--text);">
                         <span>Dinheiro</span>
                     </label>
-                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size: 15px;">
                         <input type="radio" name="pagamento" value="cartao"
-                               style="width:16px;height:16px;accent-color:var(--gold-dark);">
+                               style="width:16px;height:16px;accent-color:var(--text);">
                         <span>Cartão (débito/crédito)</span>
                     </label>
                 </div>
@@ -113,19 +139,20 @@
 
         </div>
 
-        <!-- Resumo lateral -->
-        <div style="position:sticky; top:80px;">
-            <div class="cart-summary" style="margin-bottom:16px;">
-                <h3 style="font-family:var(--font-serif); font-size:17px; margin-bottom:14px;">Resumo</h3>
-                <div id="resumo-itens" style="font-size:14px; color:var(--text-muted); margin-bottom:12px;"></div>
-                <div class="cart-summary-row">
-                    <span>Total</span>
-                    <span id="resumo-total" style="color:var(--gold-dark);">R$ 0,00</span>
+        <div style="position:sticky; top:20px;">
+            <div style="background: var(--ice-blue-light); padding: 24px; margin-bottom: 16px;">
+                <h3 style="font-weight: 400; text-transform: uppercase; margin-bottom: 16px; font-size: 16px;">Resumo da Compra</h3>
+
+                <div id="resumo-itens" style="font-size:14px; margin-bottom:16px;"></div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; border-top: 1px solid var(--ice-blue-dark); padding-top: 16px;">
+                    <span>Total estimado</span>
+                    <span id="resumo-total" style="color:var(--text);">R$ 0,00</span>
                 </div>
             </div>
 
             <button class="btn btn-primary btn-full"
-                    style="font-size:16px; padding:14px;"
+                    style="font-size:15px; padding:14px;"
                     onclick="finalizarPedido()">
                 Gerar pedido →
             </button>
@@ -134,9 +161,6 @@
     </div>
 
 </main>
-
-<!-- Footer -->
-<div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
 
 <script>
     function formatBRL(v) {
@@ -154,18 +178,15 @@
         const html = carrinho.map(item => {
             const sub = item.valor * item.quantidade;
             total += sub;
-            return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f0ea;">
-            <span>${item.nome} × ${item.quantidade}</span>
-            <span>${formatBRL(sub)}</span>
-        </div>`;
+            return `
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--white);">
+                <span style="color: var(--text-muted);">${item.nome} × ${item.quantidade}</span>
+                <span style="font-weight: 500;">${formatBRL(sub)}</span>
+            </div>`;
         }).join('');
 
         document.getElementById('resumo-itens').innerHTML = html;
         document.getElementById('resumo-total').textContent = formatBRL(total);
-
-        const qtd = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
-        const el = document.getElementById('cart-count');
-        if (el) el.textContent = qtd;
     }
 
     // Exibe/oculta campos de endereço dependendo do Radio Button
@@ -173,14 +194,13 @@
         const entrega = document.getElementById('entrega-domicilio').checked;
         document.getElementById('campos-endereco').style.display = entrega ? 'flex' : 'none';
 
-        document.getElementById('label-retirada').style.borderColor =
-            !entrega ? 'var(--gold)' : 'var(--cream-2)';
-        document.getElementById('label-entrega').style.borderColor =
-            entrega ? 'var(--gold)' : 'var(--cream-2)';
+        // Atualiza a cor da borda baseado no design "Ice Blue / Dark"
+        document.getElementById('label-retirada').style.borderColor = !entrega ? 'var(--text)' : 'var(--ice-blue-dark)';
+        document.getElementById('label-entrega').style.borderColor = entrega ? 'var(--text)' : 'var(--ice-blue-dark)';
     }
 
     // Estado inicial das bordas
-    document.getElementById('label-retirada').style.borderColor = 'var(--gold)';
+    document.getElementById('label-retirada').style.borderColor = 'var(--text)';
 
     async function finalizarPedido() {
         const nome = document.getElementById('nome').value.trim();
