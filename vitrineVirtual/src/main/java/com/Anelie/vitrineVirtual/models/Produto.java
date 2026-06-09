@@ -13,8 +13,9 @@ public class Produto {
     private Long id;
     @Column(nullable = false, length = 150)
     private String nome;
-    @Column(nullable = false, length = 100)
-    private String categoria;
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
     @Column(columnDefinition = "TEXT")
     private String descricao;
     @Column(length = 100)
@@ -39,8 +40,8 @@ public class Produto {
     public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
     public String getMaterial() { return material; }
     public void setMaterial(String material) { this.material = material; }
     public String getImagem() { return imagem; }

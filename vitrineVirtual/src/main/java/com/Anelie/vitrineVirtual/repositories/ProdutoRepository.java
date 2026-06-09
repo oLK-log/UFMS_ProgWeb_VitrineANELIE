@@ -18,4 +18,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     // Busca ordenada pela data de cadastro decrescente-mais novos primeiro)
     // O Pageable permiti limitar a quantidade limite
     List<Produto> findByOrderByDataCadastroDesc(Pageable pageable);
+
+    // Busca todos os produtos que pertencem a uma categoria específica
+    List<Produto> findByCategoriaId(Long categoriaId);
 }

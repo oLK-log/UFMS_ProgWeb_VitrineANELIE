@@ -93,11 +93,10 @@
             <a href="#ofertas" class="menu-item">OFERTAS</a>
 
             <div class="menu-divider">CATEGORIAS</div>
-
-            <a href="#" class="menu-item">ANEL</a>
-            <a href="#" class="menu-item">BRINCO</a>
-            <a href="#" class="menu-item">COLAR</a>
-            <a href="#" class="menu-item">TORNOZELEIRAS</a>
+            <a th:each="cat : ${categorias}"
+               th:href="@{/categoria/{id}(id=${cat.id})}"
+               class="menu-item"
+               th:text="${cat.nome}">CATEGORIA</a>
         </nav>
 
     </aside>

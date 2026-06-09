@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${categoriaAtual.nome} + ' - Catálogo ANELIE'">Categoria - ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="catalog-body">
+
+<header class="catalog-header">
+    <img th:src="@{/logo3.png}" alt="ANELIE Logo" class="catalog-logo">
+    <h1>CATÁLOGO DIGITAL</h1>
+</header>
+
+<div class="catalog-container">
+
+    <main class="catalog-main">
+
+        <a th:href="@{/}" style="display: inline-block; margin-bottom: 30px; font-size: 14px; color: var(--text-muted); text-decoration: none;">← Voltar para a Home</a>
+
+        <section class="catalog-section">
+            <h2 th:text="${categoriaAtual.nome}" style="text-transform: uppercase;">NOME DA CATEGORIA</h2>
+
+            <div th:if="${#lists.isEmpty(produtos)}" style="padding: 40px 0; color: var(--text-muted);">
+                <p>Ainda não temos joias cadastradas nesta categoria. Volte em breve!</p>
+            </div>
+
+            <div class="catalog-grid" th:if="${!#lists.isEmpty(produtos)}">
+                <a th:each="produto : ${produtos}" th:href="@{/produto/{id}(id=${produto.id})}" class="catalog-card">
+                    <div class="img-wrapper">
+                        <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}" th:src="${produto.imagem}" th:alt="${produto.nome}">
+                        <div class="placeholder" th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
+                    </div>
+                    <div class="card-info">
+                        <p class="name" th:text="${produto.nome}">Nome da Joia</p>
+                        <p class="price" th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <aside class="catalog-sidebar">
+        <div class="sidebar-cart" onclick="window.location.href='/carrinho'">
+            <span style="font-size: 26px;">🛒</span>
+            <span id="cart-total-sidebar">R$ 0,00</span>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a th:href="@{/#destaques}" class="menu-item">DESTAQUE</a>
+            <a th:href="@{/#recentes}" class="menu-item">ADICIONADOS R.</a>
+            <a th:href="@{/#todos}" class="menu-item">TODOS OS PRODUTOS</a>
+            <a th:href="@{/#ofertas}" class="menu-item">OFERTAS</a>
+
+            <div class="menu-divider">CATEGORIAS</div>
+
+            <a th:each="cat : ${categorias}"
+               th:href="@{/categoria/{id}(id=${cat.id})}"
+               class="menu-item"
+               th:classappend="${cat.id == categoriaAtual.id} ? 'highlight' : ''"
+               th:text="${cat.nome}">CATEGORIA</a>
+        </nav>
+    </aside>
+
+</div>
+
+<script>
+    function atualizarCarrinhoSidebar() {
+        const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+        let total = 0;
+        carrinho.forEach(item => total += (item.valor * item.quantidade));
+        document.getElementById('cart-total-sidebar').textContent =
+            'R$ ' + total.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+    atualizarCarrinhoSidebar();
+</script>
+
+</body>
+</html>
