@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha — Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="auth-page">
+    <div class="auth-card">
+
+        <div style="text-align:center; margin-bottom:24px;">
+            <img th:src="@{/logo2.png}" alt="ANELIE"
+                 style="height:100px; width:auto; object-fit:contain; margin: 0 auto;">
+        </div>
+        <p class="auth-subtitle">Informe seu e-mail para receber o link de recuperação</p>
+
+        <!-- Sucesso -->
+        <div class="alert alert-success" th:if="${param.enviado}" style="margin-bottom: 18px;">
+            Se o e-mail estiver cadastrado, você receberá o link em breve.
+        </div>
+
+        <form class="auth-form" th:action="@{/auth/solicitar-recuperacao}" method="post">
+
+            <div class="form-group">
+                <label for="email">E-mail cadastrado</label>
+                <input type="email" id="email" name="email"
+                       placeholder="seu@email.com" required autocomplete="email">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Enviar link de recuperação
+            </button>
+
+        </form>
+
+        <div class="auth-footer-link">
+            Lembrou a senha? <a th:href="@{/login}">Voltar ao login</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

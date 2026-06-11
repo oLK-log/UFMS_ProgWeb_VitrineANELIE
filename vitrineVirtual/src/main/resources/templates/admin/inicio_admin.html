@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin — Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar_admin :: navbar-admin}" th:with="currentPage='inicio'"></div>
+
+<main class="admin-main">
+
+    <div class="page-header">
+        <div>
+            <h1>Produtos cadastrados</h1>
+            <p th:text="${produtos.size()} + ' joias no catálogo'">0 joias no catálogo</p>
+        </div>
+        <a th:href="@{/admin/cadastro}" class="btn btn-primary">+ Novo produto</a>
+    </div>
+
+    <div class="alert alert-success" th:if="${mensagemSucesso}"
+         style="margin-bottom:20px;" th:text="${mensagemSucesso}"></div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Material</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="produto : ${produtos}">
+                    <td>
+                        <img class="product-thumb"
+                             th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
+                             th:src="${produto.imagem}"
+                             th:alt="${produto.nome}">
+                        <div class="product-thumb-placeholder"
+                             th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
+                    </td>
+                    <td style="font-weight:500;" th:text="${produto.nome}">Nome</td>
+                    <td>
+                        <span class="badge badge-gold" th:text="${produto.categoria}">Categoria</span>
+                    </td>
+                    <td style="font-size:13px; color:var(--text-muted);"
+                        th:text="${produto.material ?: '—'}">Material</td>
+                    <td style="font-weight:500; color:var(--gold-dark);"
+                        th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 0,00
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a th:href="@{/admin/editar/{id}(id=${produto.id})}"
+                               class="btn btn-outline btn-sm">Editar</a>
+                            <a th:href="@{/admin/excluir/{id}(id=${produto.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Deseja excluir esta joia?')">Excluir</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${produtos.isEmpty()}">
+                    <td colspan="6" style="text-align:center; padding:48px; color:var(--text-muted);">
+                        Nenhum produto cadastrado ainda.
+                        <a th:href="@{/admin/cadastro}" style="color:var(--gold-dark); margin-left:6px;">
+                            Cadastrar primeiro produto →
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+</body>
+</html>

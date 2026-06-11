@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Produto — Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar_admin :: navbar-admin}" th:with="currentPage='cadastro'"></div>
+
+<main class="admin-main">
+
+    <div class="page-header">
+        <div>
+            <h1 th:text="${produto.id != null} ? 'Editar produto' : 'Novo produto'">Novo produto</h1>
+            <p>Preencha os dados da joia abaixo</p>
+        </div>
+        <a th:href="@{/admin/inicio}" class="btn btn-outline">← Voltar</a>
+    </div>
+
+    <div style="background:var(--white); border:1px solid var(--cream-2);
+                border-radius:var(--radius-lg); padding:32px; max-width:680px;">
+
+        <form th:action="${produto.id != null} ? @{/admin/editar/{id}(id=${produto.id})} : @{/admin/cadastro}"
+              th:object="${produto}"
+              method="post"
+              style="display:flex; flex-direction:column; gap:20px;">
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                <div class="form-group">
+                    <label for="nome">Nome da joia</label>
+                    <input type="text" id="nome" th:field="*{nome}"
+                           placeholder="Ex: Anel Solitário Prata" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" th:field="*{categoria}" required>
+                        <option value="">Selecione...</option>
+                        <option value="Anel">Anel</option>
+                        <option value="Brinco">Brinco</option>
+                        <option value="Colar">Colar</option>
+                        <option value="Pulseira">Pulseira</option>
+                        <option value="Pingente">Pingente</option>
+                        <option value="Broche">Broche</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                <div class="form-group">
+                    <label for="valor">Preço (R$)</label>
+                    <input type="number" id="valor" th:field="*{valor}"
+                           placeholder="0.00" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="material">Material</label>
+                    <input type="text" id="material" th:field="*{material}"
+                           placeholder="Ex: Prata 925, Ouro 18K">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="imagem">URL da imagem</label>
+                <input type="text" id="imagem" th:field="*{imagem}"
+                       placeholder="/Anel.jpg ou https://exemplo.com/foto.jpg">
+            </div>
+
+            <!-- Preview da imagem -->
+            <div id="img-preview-container"
+                 th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
+                 style="margin-top:-8px;">
+                <img th:src="${produto.imagem}"
+                     id="img-preview"
+                     style="width:100px; height:100px; object-fit:cover;
+                            border-radius:var(--radius); border:1px solid var(--cream-2);">
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" th:field="*{descricao}"
+                          placeholder="Descreva os detalhes e características da joia..."
+                          rows="4"></textarea>
+            </div>
+
+            <div style="display:flex; gap:12px; padding-top:8px;">
+                <button type="submit" class="btn btn-primary">
+                    <span th:text="${produto.id != null} ? 'Salvar alterações' : 'Cadastrar produto'">
+                        Cadastrar produto
+                    </span>
+                </button>
+                <a th:href="@{/admin/inicio}" class="btn btn-outline">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+
+</main>
+
+<script>
+const imgInput = document.getElementById('imagem');
+if (imgInput) {
+    imgInput.addEventListener('input', function() {
+        const url = this.value.trim();
+        let preview = document.getElementById('img-preview');
+        let container = document.getElementById('img-preview-container');
+
+        if (!url) { if (container) container.style.display = 'none'; return; }
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'img-preview-container';
+            imgInput.parentElement.after(container);
+        }
+        if (!preview) {
+            preview = document.createElement('img');
+            preview.id = 'img-preview';
+            preview.style.cssText = 'width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--cream-2);';
+            container.appendChild(preview);
+        }
+        preview.src = url;
+        container.style.display = 'block';
+    });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho — Vitrine ANELIE</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar_footer_cliente :: navbar-cliente}"></div>
+
+<main class="page-main">
+
+    <h1 class="page-title">Seu carrinho</h1>
+
+    <!-- Carrinho vazio -->
+    <div id="carrinho-vazio" style="display:none; text-align:center; padding:80px 20px; color:var(--text-muted);">
+        <p style="font-size:40px; margin-bottom:12px;">🛒</p>
+        <p style="margin-bottom:20px;">Seu carrinho está vazio.</p>
+        <a th:href="@{/}" class="btn btn-primary">Explorar joias</a>
+    </div>
+
+    <!-- Lista de itens -->
+    <div id="carrinho-itens"></div>
+
+    <!-- Resumo -->
+    <div id="carrinho-resumo" style="display:none;">
+        <div class="cart-summary">
+            <div class="cart-summary-row">
+                <span>Subtotal</span>
+                <span id="subtotal">R$ 0,00</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Frete</span>
+                <span style="color:var(--text-muted); font-size:13px;">calculado no checkout</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Total estimado</span>
+                <span id="total">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:16px; justify-content:flex-end;">
+            <a th:href="@{/}" class="btn btn-outline">Continuar comprando</a>
+            <a th:href="@{/checkout}" class="btn btn-primary" style="font-size:16px; padding:12px 28px;">
+                Finalizar pedido →
+            </a>
+        </div>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
+
+<script>
+function formatBRL(v) {
+    return 'R$ ' + Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function renderCarrinho() {
+    const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    const container = document.getElementById('carrinho-itens');
+    const vazio = document.getElementById('carrinho-vazio');
+    const resumo = document.getElementById('carrinho-resumo');
+
+    container.innerHTML = '';
+
+    if (carrinho.length === 0) {
+        vazio.style.display = 'block';
+        resumo.style.display = 'none';
+        return;
+    }
+    vazio.style.display = 'none';
+    resumo.style.display = 'block';
+
+    let total = 0;
+    carrinho.forEach((item, idx) => {
+        total += item.valor * item.quantidade;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+            ${item.imagem
+                ? `<img src="${item.imagem}" alt="${item.nome}" style="width:72px;height:72px;border-radius:8px;object-fit:cover;flex-shrink:0;">`
+                : `<div class="cart-item-img-placeholder">✦</div>`}
+            <div class="cart-item-info">
+                <p class="cart-item-name">${item.nome}</p>
+                <p class="cart-item-price">${formatBRL(item.valor)} por unidade</p>
+            </div>
+            <div class="qty-control">
+                <button onclick="mudarQtd(${idx}, -1)">−</button>
+                <span>${item.quantidade}</span>
+                <button onclick="mudarQtd(${idx}, 1)">+</button>
+            </div>
+            <div style="min-width:80px;text-align:right;font-weight:500;color:var(--gold-dark);">
+                ${formatBRL(item.valor * item.quantidade)}
+            </div>
+            <button onclick="removerItem(${idx})"
+                    style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;padding:4px;">
+                ×
+            </button>
+        `;
+        container.appendChild(div);
+    });
+
+    document.getElementById('subtotal').textContent = formatBRL(total);
+    document.getElementById('total').textContent = formatBRL(total);
+
+    // Atualiza contador da navbar
+    const qtdTotal = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
+    const el = document.getElementById('cart-count');
+    if (el) el.textContent = qtdTotal;
+}
+
+function mudarQtd(idx, delta) {
+    let carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    carrinho[idx].quantidade += delta;
+    if (carrinho[idx].quantidade <= 0) carrinho.splice(idx, 1);
+    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    renderCarrinho();
+}
+
+function removerItem(idx) {
+    let carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+    carrinho.splice(idx, 1);
+    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    renderCarrinho();
+}
+
+renderCarrinho();
+</script>
+
+</body>
+</html>
