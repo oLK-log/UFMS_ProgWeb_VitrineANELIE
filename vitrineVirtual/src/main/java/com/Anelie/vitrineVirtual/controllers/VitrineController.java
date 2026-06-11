@@ -60,7 +60,7 @@ public class VitrineController {
                 produto.getValor()
         );
 
-        model.addAttribute("produtoDetalhe", dto);
-        return "cliente/detalhes_produto";
+        model.addAttribute("produto", dto);
+        return "detalhes_produto";
     }
 }

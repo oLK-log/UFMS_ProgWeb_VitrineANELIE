@@ -23,21 +23,7 @@ public class ProdutoController {
     // ── Área Cliente ─────────────────────────────────────────────────────────
 
     // Vitrine — listagem pública de produtos
-    @GetMapping("/")
-    public String exibirVitrine(Model model) {
-        List<Produto> listaDeProdutos = produtoRepository.findAll();
-        model.addAttribute("produtos", listaDeProdutos);
-        return "vitrine";
-    }
 
-    // Detalhes de um produto
-    @GetMapping("/produto/{id}")
-    public String exibirDetalhesProduto(@PathVariable Long id, Model model) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado: " + id));
-        model.addAttribute("produto", produto);
-        return "detalhes_produto";
-    }
 
     // Pedido finalizado — tela de conclusão com copia/cola
     // @GetMapping("/pedido-finalizado")
