@@ -20,17 +20,17 @@ Este projeto adota o padrão arquitetural MVC (Model-View-Controller), separando
 
 * #### **Diagrama Entidade-Relacionamento (DER)**
 <div align="center">
-  <img src="./Diagramas/der_anelie.jpg" alt="Imagem do Diagrama Entidade-Relacionamento" width="700"/>
+  <img src="./docs/Diagramas/Diagrama EER - Grupo Catálogo de Jóias.jpg" alt="Imagem do Diagrama Entidade-Relacionamento" width="700"/>
 </div>
 
 * #### **Mockups de Interface (Wireframes)**
 <div align="center">
-  <img src="./Diagramas/mockup_telas.jpg" alt="Imagem dos Mockups da Interface" width="700"/>
+  <img src="./docs/Diagramas/mockup_telas.jpg" alt="Imagem dos Mockups da Interface" width="700"/>
 </div>
 
 * #### **Diagrama de Classes (Camada Model)**
 <div align="center">
-  <img src="./Diagramas/diagrama_classes.jpg" alt="Imagem do Diagrama de Classes" width="700"/>
+  <img src="./docs/Diagramas/Diagrama de Classes - Grupo Catálogo de Jóias.jpg" alt="Imagem do Diagrama de Classes" width="700"/>
 </div>
 
 ⚠ **Atenção**: Material com fins de aprendizado acadêmico, e assim sendo, pode conter **erros** e **inconsistências**.
