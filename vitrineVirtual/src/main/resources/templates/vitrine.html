@@ -1,92 +1,91 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vitrine ANELIE — Joias</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
 
-<div th:replace="~{fragments/navbar_footer_cliente :: navbar-cliente}"></div>
+    <div th:replace="~{fragments/navbar_footer_cliente :: navbar-cliente}"></div>
 
-<section class="vitrine-hero">
-    <img th:src="@{/logo3.png}" alt="ANELIE"
-         style="height:90px; width:auto; object-fit:contain; margin: 0 auto 12px;">
-    <p>Joias que contam histórias</p>
-</section>
+    <section class="vitrine-hero">
+        <img th:src="@{/logo3.png}" alt="ANELIE"
+            style="height:90px; width:auto; object-fit:contain; margin: 0 auto 12px;">
+        <p>Joias que contam histórias</p>
+    </section>
 
-<main class="vitrine-main">
+    <main class="vitrine-main">
 
-    <div class="search-bar">
-        <input type="text" id="busca" placeholder="Buscar por nome da joia..."
-               oninput="filtrarProdutos(this.value)">
-    </div>
-
-    <div class="products-grid" id="produtos-grid">
-
-        <a th:each="produto : ${produtos}"
-           th:href="@{/produto/{id}(id=${produto.id})}"
-           class="product-card"
-           th:data-nome="${produto.nome}">
-
-            <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}"
-                 th:src="${produto.imagem}"
-                 th:alt="${produto.nome}">
-            <div class="product-card-img-placeholder"
-                 th:if="${produto.imagem == null or produto.imagem.isEmpty()}">✦</div>
-
-            <div class="product-card-body">
-                <p class="product-card-category" th:text="${produto.categoria}">Categoria</p>
-                <p class="product-card-name" th:text="${produto.nome}">Nome da Joia</p>
-                <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"
-                   th:text="${produto.material}" th:if="${produto.material != null}"></p>
-                <p class="product-card-price"
-                   th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">
-                    R$ 0,00
-                </p>
-            </div>
-        </a>
-
-        <div th:if="${produtos.isEmpty()}"
-             style="grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--text-muted);">
-            <p style="font-size:40px; margin-bottom:12px;">✦</p>
-            <p>Nenhuma joia disponível no momento.</p>
+        <div class="search-bar">
+            <input type="text" id="busca" placeholder="Buscar por nome da joia..."
+                oninput="filtrarProdutos(this.value)">
         </div>
 
-    </div>
+        <div class="products-grid" id="produtos-grid">
 
-</main>
+            <a th:each="produto : ${produtos}" th:href="@{/produto/{id}(id=${produto.id})}" class="product-card"
+                th:data-nome="${produto.nome}">
 
-<div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
+                <img th:if="${produto.imagem != null and !produto.imagem.isEmpty()}" th:src="${produto.imagem}"
+                    th:alt="${produto.nome}">
+                <div class="product-card-img-placeholder" th:if="${produto.imagem == null or produto.imagem.isEmpty()}">
+                    ✦</div>
 
-<a th:href="@{/login}"
-   style="position:fixed; bottom:20px; right:20px;
-          background:var(--dark); color:var(--text-muted);
+                <div class="product-card-body">
+                    <p class="product-card-category" th:text="${produto.categoria}">Categoria</p>
+                    <p class="product-card-name" th:text="${produto.nome}">Nome da Joia</p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;" th:text="${produto.material}"
+                        th:if="${produto.material != null}"></p>
+                    <p class="product-card-price"
+                        th:text="'R$ ' + ${#numbers.formatDecimal(produto.valor, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 0,00
+                    </p>
+                </div>
+            </a>
+
+            <div th:if="${produtos.isEmpty()}"
+                style="grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--text-muted);">
+                <p style="font-size:40px; margin-bottom:12px;">✦</p>
+                <p>Nenhuma joia disponível no momento.</p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <div th:replace="~{fragments/navbar_footer_cliente :: footer-cliente}"></div>
+
+    <a th:href="@{/login}" style="position:fixed; bottom:20px; right:20px;
+          background:var(--dark); color:#ffffff;
+          border: 1.5px solid #7a7068;
           padding:8px 14px; border-radius:var(--radius);
-          font-size:12px; opacity:0.4; transition:opacity 0.2s;"
-   onmouseover="this.style.opacity='1'"
-   onmouseout="this.style.opacity='0.4'">
-    Área do lojista
-</a>
+          font-size:12px; opacity:0.6; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'"
+        onmouseout="this.style.opacity='0.6'">
+        Área do lojista
+    </a>
 
-<script>
-function atualizarContadorCarrinho() {
-    const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
-    const total = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
-    const el = document.getElementById('cart-count');
-    if (el) el.textContent = total;
-}
-atualizarContadorCarrinho();
+    <script>
+        function atualizarContadorCarrinho() {
+            const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+            const total = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+            const el = document.getElementById('cart-count');
+            if (el) el.textContent = total;
+        }
+        atualizarContadorCarrinho();
 
-function filtrarProdutos(termo) {
-    const cards = document.querySelectorAll('#produtos-grid a[data-nome]');
-    const t = termo.toLowerCase();
-    cards.forEach(card => {
-        card.style.display = card.dataset.nome.toLowerCase().includes(t) ? '' : 'none';
-    });
-}
-</script>
+        function filtrarProdutos(termo) {
+            const cards = document.querySelectorAll('#produtos-grid a[data-nome]');
+            const t = termo.toLowerCase();
+            cards.forEach(card => {
+                card.style.display = card.dataset.nome.toLowerCase().includes(t) ? '' : 'none';
+            });
+        }
+    </script>
 
 </body>
+
 </html>
